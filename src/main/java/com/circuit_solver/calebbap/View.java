@@ -31,6 +31,13 @@ public class View extends Application{
     double dotXPosition = 0;
     double dotYPosition = 0;
 
+    double clickX;
+    double clickY;
+    double currentX;
+    double currentY;
+    
+    boolean userDrawing = false;
+
     public void start(Stage primaryStage){
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Circuit Solver");
@@ -83,14 +90,38 @@ public class View extends Application{
         
         GridPane tools = new GridPane();
 
+        
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         circuit.setOnMouseMoved(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if(dotSpacing != 0){
+                if(dotSpacing != 0 && !userDrawing){
                     circuitHover(event.getX(), event.getY());
+                }else if(userDrawing){
+                    drawComponent(event.getX(), event.getY());
                 }
             }
         });
+
+        circuit.setOnMouseExited(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                clearHover();
+            }
+        });
+
+        circuit.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                clickX = event.getX();
+                clickY = event.getY();
+                userDrawing = true;
+            }
+        });
+
+        circuit.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                userDrawing = false;
+            }
+        });
+
         circuitCanvasGraphics = circuit.getGraphicsContext2D();
         circuitCanvasGraphics.setFill(Color.BLUE);
 
@@ -105,34 +136,50 @@ public class View extends Application{
         gridPane.getChildren().addAll(menuBar, tools, circuit);
     }
 
-    /*
-        Use numXDots and numYDots as well as mouse location relative to Pane dimensions to figure
-        out the x and y percentage of the mouse location relative to Pane closest to the dot placement relative
-        to numXDots and numYDots.
-    */
+    void drawComponent(double x, double y){
+        if( ((x < clickX) || (x > clickX)) && ((y < clickY) || (y > clickY)) ){
+            // Draw component on angle
+        }else if( (x < clickX) || (x > clickX) ){
+            
+        }else{
+            // Draw component on vertically
+        }
+        // COPY circuit hover code so that component drawing updates each time. When user releases mouse
+        // simply do nothing as last component position drawn should be kept.
+    }
 
     void circuitHover(double x, double y){
-        if((dotXPosition + dotYPosition) != 0 ){
-            circuitCanvasGraphics.setFill(Color.TRANSPARENT);
-            circuitCanvasGraphics.setStroke(Color.WHITE);
-            circuitCanvasGraphics.setLineWidth(3);
-            circuitCanvasGraphics.strokeArc(dotXPosition - 4, dotYPosition - 4, 8, 8, 0, 360, ArcType.OPEN);
-        }
-
-        Bounds canvasBounds = circuit.getBoundsInParent();
-        double relativeXPostion = x / canvasBounds.getWidth();
-        double relativeYPostion = y / canvasBounds.getHeight();
+        clearHover();
         
-        int dotX = (int) (relativeXPostion * numDots[0]);
-        int dotY = (int) (relativeYPostion * numDots[1]);
-
-        dotXPosition = (dotSpacing * dotX) + 1;
-        dotYPosition = (dotSpacing * dotY) + 1;
+        double[] relativePosition = relativeMousePosition(x, y);
+        dotXPosition = relativePosition[0];
+        dotYPosition = relativePosition[1];
 
         circuitCanvasGraphics.setFill(Color.TRANSPARENT);
         circuitCanvasGraphics.setStroke(Color.BLACK);
         circuitCanvasGraphics.setLineWidth(2);
-        circuitCanvasGraphics.strokeArc(dotXPosition - 4, dotYPosition - 4, 8, 8, 0, 360, ArcType.OPEN);
+        circuitCanvasGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
+    }
+
+    void clearHover(){
+        if((dotXPosition + dotYPosition) != 0 ){
+            circuitCanvasGraphics.setFill(Color.TRANSPARENT);
+            circuitCanvasGraphics.setStroke(Color.WHITE);
+            circuitCanvasGraphics.setLineWidth(3);
+            circuitCanvasGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
+        }
+    }
+
+    double[] relativeMousePosition(double x, double y){
+        Bounds canvasBounds = circuit.getBoundsInParent();
+        double relativeXPostion = x / canvasBounds.getWidth();
+        double relativeYPostion = y / canvasBounds.getHeight();
+        
+        int numDotX = (int) (relativeXPostion * numDots[0] + 1);
+        int numDotY = (int) (relativeYPostion * numDots[1] + 1);
+
+        double[] relativePosition = {(dotSpacing * numDotX), (dotSpacing * numDotY)};
+        return relativePosition;
     }
 
     void drawCircuitBackground(double dotSpacing, double width, double height){
@@ -167,20 +214,3 @@ public class View extends Application{
         launch(args);
     }
 }
-
-/*
-        // An array list to add components to in order to later add them to GUI
-        ArrayList<javafx.scene.control.Control> components = new ArrayList<javafx.scene.control.Control>();
-        components.add(mainToolBar);
-        addComponentsToGUI(gridPane, components);
-        
-    } (end of frame bracket)
-    
-    /*
-    // Method to add components to GUI
-    public void addComponentsToGUI(Pane pane, ArrayList<javafx.scene.control.Control> components){
-        for(int i = 0; i < components.size(); i++){
-            pane.getChildren().add(components.get(i));
-        }
-    }
-    */
