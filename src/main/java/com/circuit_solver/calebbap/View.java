@@ -23,7 +23,9 @@ import javafx.scene.input.*;
 public class View extends Application{
 
     Canvas circuit;
-    GraphicsContext circuitCanvasGraphics;
+    GraphicsContext circuitGraphics;
+    Canvas tempCircuit;
+    GraphicsContext tempCircuitGraphics;
     
     int[] numDots = {0, 0};
 
@@ -33,8 +35,9 @@ public class View extends Application{
 
     double clickX;
     double clickY;
-    double currentX;
-    double currentY;
+    
+    double tempCompX;
+    double tempCompY;
     
     boolean userDrawing = false;
 
@@ -96,56 +99,86 @@ public class View extends Application{
             public void handle(MouseEvent event) {
                 if(dotSpacing != 0 && !userDrawing){
                     circuitHover(event.getX(), event.getY());
-                }else if(userDrawing){
-                    drawComponent(event.getX(), event.getY());
                 }
             }
         });
 
         circuit.setOnMouseExited(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
+                userDrawing = false;
                 clearHover();
             }
         });
 
-        circuit.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        circuit.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                clickX = event.getX();
-                clickY = event.getY();
                 userDrawing = true;
+                double[] relativePosition = relativeMousePosition(event.getX(), event.getY());
+                clickX = relativePosition[0];
+                clickY = relativePosition[1]; 
+                circuit.setMouseTransparent(true);
+                //event.setDragDetect(true);
+            }
+        });
+
+        circuit.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                //if(userDrawing){
+                drawComponent(event.getX(), event.getY());
+                //}
             }
         });
 
         circuit.setOnMouseReleased(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
+                
+                System.out.println("Mouse Released");
+                //event.setDragDetect(false);
                 userDrawing = false;
             }
         });
 
-        circuitCanvasGraphics = circuit.getGraphicsContext2D();
-        circuitCanvasGraphics.setFill(Color.BLUE);
+        circuitGraphics = circuit.getGraphicsContext2D();
+        circuitGraphics.setFill(Color.BLUE);
 
+        
+        tempCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
+        tempCircuitGraphics = tempCircuit.getGraphicsContext2D();
 
         GridPane.setRowIndex(menuBar, 0);
         GridPane.setColumnIndex(menuBar, 0);
         GridPane.setColumnSpan(menuBar, 2);
         GridPane.setRowIndex(tools, 1);
         GridPane.setColumnIndex(tools, 0);
+        GridPane.setRowIndex(tempCircuit, 1);
+        GridPane.setColumnIndex(tempCircuit, 1);
         GridPane.setRowIndex(circuit, 1);
         GridPane.setColumnIndex(circuit, 1);
-        gridPane.getChildren().addAll(menuBar, tools, circuit);
+        gridPane.getChildren().addAll(menuBar, tools, tempCircuit, circuit);
     }
 
     void drawComponent(double x, double y){
-        if( ((x < clickX) || (x > clickX)) && ((y < clickY) || (y > clickY)) ){
+        /*if( ((x < clickX) || (x > clickX)) && ((y < clickY) || (y > clickY)) ){
             // Draw component on angle
         }else if( (x < clickX) || (x > clickX) ){
             
         }else{
             // Draw component on vertically
-        }
-        // COPY circuit hover code so that component drawing updates each time. When user releases mouse
-        // simply do nothing as last component position drawn should be kept.
+        }*/
+        double[] relativePosition = relativeMousePosition(x, y);
+        x = relativePosition[0];
+        y = relativePosition[1];
+        tempCircuitGraphics.clearRect(0, 0, tempCircuit.getWidth(), tempCircuit.getHeight());
+        //System.out.printf("drawComponent(%f, %f)", x, y);
+        tempCompX = x;
+        tempCompY = y;
+        tempCircuitGraphics.setStroke(Color.BLACK);
+        tempCircuitGraphics.setLineWidth(4);
+        tempCircuitGraphics.strokeLine(clickX, clickY, x, y);
+    }
+
+    void clearComponent(){
+
     }
 
     void circuitHover(double x, double y){
@@ -155,18 +188,18 @@ public class View extends Application{
         dotXPosition = relativePosition[0];
         dotYPosition = relativePosition[1];
 
-        circuitCanvasGraphics.setFill(Color.TRANSPARENT);
-        circuitCanvasGraphics.setStroke(Color.BLACK);
-        circuitCanvasGraphics.setLineWidth(2);
-        circuitCanvasGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
+        circuitGraphics.setFill(Color.TRANSPARENT);
+        circuitGraphics.setStroke(Color.BLACK);
+        circuitGraphics.setLineWidth(2);
+        circuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
     }
 
     void clearHover(){
         if((dotXPosition + dotYPosition) != 0 ){
-            circuitCanvasGraphics.setFill(Color.TRANSPARENT);
-            circuitCanvasGraphics.setStroke(Color.WHITE);
-            circuitCanvasGraphics.setLineWidth(3);
-            circuitCanvasGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
+            circuitGraphics.setFill(Color.TRANSPARENT);
+            circuitGraphics.setStroke(Color.WHITE);
+            circuitGraphics.setLineWidth(3);
+            circuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
         }
     }
 
@@ -188,7 +221,7 @@ public class View extends Application{
 
         for(double x = dotSpacing; x <= ((width * 0.85) - dotSpacing); x+=dotSpacing){
             for(double y = dotSpacing; y <= ((height * 0.95) - dotSpacing); y+=dotSpacing){
-                circuitCanvasGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
+                circuitGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
                 numYDots++;
             }
             numXDots++;
@@ -203,7 +236,7 @@ public class View extends Application{
     void newCircuit(double frameWidth, double frameHeight){
         dotSpacing = frameWidth * 0.01;
         drawCircuitBackground(dotSpacing, frameWidth, frameHeight);
-        circuitCanvasGraphics.save();
+        circuitGraphics.save();
     }
 
     void openCircuit(){
