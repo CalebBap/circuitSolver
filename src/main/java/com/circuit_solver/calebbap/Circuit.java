@@ -6,6 +6,9 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
 
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
+
 public class Circuit{
 
     private Canvas mainCircuit;
@@ -15,18 +18,19 @@ public class Circuit{
     
     private int[] numDots = {0, 0};
 
-    public double dotSpacing = 0;
+    private double dotSpacing = 0;
     private double dotXPosition = 0;
     private double dotYPosition = 0;
 
-    public double clickX;
-    public double clickY;
+    private double clickX;
+    private double clickY;
 
-    Circuit(Canvas circuit, GraphicsContext circuitGraphics, Canvas tempCircuit, GraphicsContext tempCircuitGraphics){
+    Circuit(Canvas circuit, GraphicsContext circuitGraphics, Canvas tempCircuit, GraphicsContext tempCircuitGraphics, double frameWidth){
         mainCircuit = circuit;
         mainCircuitGraphics = circuitGraphics;
         mainTempCircuit = tempCircuit;
         mainTempCircuitGraphics = tempCircuitGraphics;
+        dotSpacing  = frameWidth * 0.01;
     }
 
     void drawComponent(double x, double y){
@@ -93,5 +97,42 @@ public class Circuit{
 
         numDots[0] = numXDots;
         numDots[1] = numYDots;
+    }
+
+    void mouseControl(){
+        mainCircuit.setOnMouseMoved(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                if(dotSpacing != 0){
+                    circuitHover(event.getX(), event.getY());
+                }
+            }
+        });
+
+        mainCircuit.setOnMouseExited(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                clearHover();
+            }
+        });
+
+        mainCircuit.setOnMousePressed(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                double[] relativePosition = relativeMousePosition(event.getX(), event.getY());
+                clickX = relativePosition[0];
+                clickY = relativePosition[1]; 
+                mainCircuit.setMouseTransparent(true);
+            }
+        });
+
+        mainCircuit.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                drawComponent(event.getX(), event.getY());
+            }
+        });
+
+        mainCircuit.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                System.out.println("Mouse Released");
+            }
+        });
     }
 }

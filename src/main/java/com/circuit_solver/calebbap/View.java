@@ -1,14 +1,12 @@
 package com.circuit_solver.calebbap;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -19,24 +17,25 @@ public class View extends Application{
 
     Canvas circuit;
     GraphicsContext circuitGraphics;
+    Circuit circuitControl;
+    
     Canvas tempCircuit;
     GraphicsContext tempCircuitGraphics;
-
-    Circuit circuitControl;
     Circuit tempCircuitControl;
 
     public void start(Stage primaryStage){
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Circuit Solver");
+        
         GridPane root = new GridPane();
+        root.setId("root");
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("/primary.css").toExternalForm());
+        
         primaryStage.setScene(scene);
         primaryStage.show();
+
         frameOne(root);   
-        
-        
-        root.setStyle("-fx-background-color: white;");
     } 
 
     public void frameOne(GridPane gridPane){
@@ -73,11 +72,9 @@ public class View extends Application{
 
         menuItem.getItems().addAll(menuFileNew, menuFileOpen);
         menuBar.getMenus().add(menuItem);
-
         
         GridPane tools = new GridPane();
 
-        
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         circuitGraphics = circuit.getGraphicsContext2D();
         circuitGraphics.setFill(Color.BLUE);
@@ -85,42 +82,7 @@ public class View extends Application{
         tempCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         tempCircuitGraphics = tempCircuit.getGraphicsContext2D();
         
-        circuitControl = new Circuit(circuit, circuitGraphics, tempCircuit, tempCircuitGraphics);
-
-        circuit.setOnMouseMoved(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent event) {
-                if(circuitControl.dotSpacing != 0){
-                    circuitControl.circuitHover(event.getX(), event.getY());
-                }
-            }
-        });
-
-        circuit.setOnMouseExited(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent event) {
-                circuitControl.clearHover();
-            }
-        });
-
-        circuit.setOnMousePressed(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent event) {
-                double[] relativePosition = circuitControl.relativeMousePosition(event.getX(), event.getY());
-                circuitControl.clickX = relativePosition[0];
-                circuitControl.clickY = relativePosition[1]; 
-                circuit.setMouseTransparent(true);
-            }
-        });
-
-        circuit.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent event) {
-                circuitControl.drawComponent(event.getX(), event.getY());
-            }
-        });
-
-        circuit.setOnMouseReleased(new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent event) {
-                System.out.println("Mouse Released");
-            }
-        });
+        circuitControl = new Circuit(circuit, circuitGraphics, tempCircuit, tempCircuitGraphics, frameWidth);
 
         GridPane.setRowIndex(menuBar, 0);
         GridPane.setColumnIndex(menuBar, 0);
@@ -135,9 +97,8 @@ public class View extends Application{
     }
 
     void newCircuit(double frameWidth, double frameHeight){
-        circuitControl.dotSpacing = frameWidth * 0.01;
         circuitControl.drawCircuitBackground(frameWidth, frameHeight);
-        circuitGraphics.save();
+        circuitControl.mouseControl();
     }
 
     void openCircuit(){
