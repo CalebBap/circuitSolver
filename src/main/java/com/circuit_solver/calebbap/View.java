@@ -19,15 +19,19 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.input.*;
 
+<<<<<<< HEAD
+=======
+import com.circuit_solver.calebbap.Circuit;
+
+>>>>>>> Circuit-Class
 public class View extends Application{
 
     Canvas circuit;
     GraphicsContext circuitGraphics;
     Canvas tempCircuit;
     GraphicsContext tempCircuitGraphics;
-    
-    int[] numDots = {0, 0};
 
+<<<<<<< HEAD
     double dotSpacing = 0;
     double dotXPosition = 0;
     double dotYPosition = 0;
@@ -37,6 +41,10 @@ public class View extends Application{
     
     double tempCompX;
     double tempCompY;
+=======
+    Circuit circuitControl;
+    Circuit tempCircuitControl;
+>>>>>>> Circuit-Class
 
     public void start(Stage primaryStage){
         primaryStage.setMaximized(true);
@@ -92,48 +100,67 @@ public class View extends Application{
 
         
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
+        circuitGraphics = circuit.getGraphicsContext2D();
+        circuitGraphics.setFill(Color.BLUE);
+
+        tempCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
+        tempCircuitGraphics = tempCircuit.getGraphicsContext2D();
+        
+        circuitControl = new Circuit(circuit, circuitGraphics, tempCircuit, tempCircuitGraphics);
+
         circuit.setOnMouseMoved(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
+<<<<<<< HEAD
                 if(dotSpacing != 0){
                     circuitHover(event.getX(), event.getY());
+=======
+                if(circuitControl.dotSpacing != 0){
+                    circuitControl.circuitHover(event.getX(), event.getY());
+>>>>>>> Circuit-Class
                 }
             }
         });
 
         circuit.setOnMouseExited(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
+<<<<<<< HEAD
                 clearHover();
+=======
+                circuitControl.clearHover();
+>>>>>>> Circuit-Class
             }
         });
 
         circuit.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
+<<<<<<< HEAD
                 double[] relativePosition = relativeMousePosition(event.getX(), event.getY());
                 clickX = relativePosition[0];
                 clickY = relativePosition[1]; 
+=======
+                double[] relativePosition = circuitControl.relativeMousePosition(event.getX(), event.getY());
+                circuitControl.clickX = relativePosition[0];
+                circuitControl.clickY = relativePosition[1]; 
+>>>>>>> Circuit-Class
                 circuit.setMouseTransparent(true);
             }
         });
 
         circuit.setOnMouseDragged(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
+<<<<<<< HEAD
                 drawComponent(event.getX(), event.getY());
+=======
+                circuitControl.drawComponent(event.getX(), event.getY());
+>>>>>>> Circuit-Class
             }
         });
 
         circuit.setOnMouseReleased(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                
                 System.out.println("Mouse Released");
             }
         });
-
-        circuitGraphics = circuit.getGraphicsContext2D();
-        circuitGraphics.setFill(Color.BLUE);
-
-        
-        tempCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
-        tempCircuitGraphics = tempCircuit.getGraphicsContext2D();
 
         GridPane.setRowIndex(menuBar, 0);
         GridPane.setColumnIndex(menuBar, 0);
@@ -165,6 +192,7 @@ public class View extends Application{
         circuitGraphics.save();
     }
 
+<<<<<<< HEAD
     void openCircuit(){}
 
     void drawComponent(double x, double y){
@@ -217,6 +245,16 @@ public class View extends Application{
 
         numDots[0] = numXDots;
         numDots[1] = numYDots;
+=======
+    void newCircuit(double frameWidth, double frameHeight){
+        circuitControl.dotSpacing = frameWidth * 0.01;
+        circuitControl.drawCircuitBackground(frameWidth, frameHeight);
+        circuitGraphics.save();
+    }
+
+    void openCircuit(){
+        
+>>>>>>> Circuit-Class
     }
 
     public static void main(String[] args){
