@@ -27,20 +27,9 @@ public class View extends Application{
     GraphicsContext circuitGraphics;
     Canvas tempCircuit;
     GraphicsContext tempCircuitGraphics;
-    
-    int[] numDots = {0, 0};
 
-    double dotSpacing = 0;
-    double dotXPosition = 0;
-    double dotYPosition = 0;
-
-    double clickX;
-    double clickY;
-    
-    double tempCompX;
-    double tempCompY;
-    
-    boolean userDrawing = false;
+    Circuit circuitControl;
+    Circuit tempCircuitControl;
 
     public void start(Stage primaryStage){
         primaryStage.setMaximized(true);
@@ -96,50 +85,48 @@ public class View extends Application{
 
         
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
+        circuitGraphics = circuit.getGraphicsContext2D();
+        circuitGraphics.setFill(Color.BLUE);
+
+        tempCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
+        tempCircuitGraphics = tempCircuit.getGraphicsContext2D();
+        
+        circuitControl = new Circuit(circuit, circuitGraphics, tempCircuit, tempCircuitGraphics);
+
         circuit.setOnMouseMoved(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if(dotSpacing != 0 && !userDrawing){
-                    circuitHover(event.getX(), event.getY());
+                if(circuitControl.dotSpacing != 0){
+                    circuitControl.circuitHover(event.getX(), event.getY());
                 }
             }
         });
 
         circuit.setOnMouseExited(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                userDrawing = false;
-                clearHover();
+                circuitControl.clearHover();
             }
         });
 
         circuit.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                userDrawing = true;
-                double[] relativePosition = relativeMousePosition(event.getX(), event.getY());
-                clickX = relativePosition[0];
-                clickY = relativePosition[1]; 
+                double[] relativePosition = circuitControl.relativeMousePosition(event.getX(), event.getY());
+                circuitControl.clickX = relativePosition[0];
+                circuitControl.clickY = relativePosition[1]; 
                 circuit.setMouseTransparent(true);
             }
         });
 
         circuit.setOnMouseDragged(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                drawComponent(event.getX(), event.getY());
+                circuitControl.drawComponent(event.getX(), event.getY());
             }
         });
 
         circuit.setOnMouseReleased(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 System.out.println("Mouse Released");
-                userDrawing = false;
             }
         });
-
-        circuitGraphics = circuit.getGraphicsContext2D();
-        circuitGraphics.setFill(Color.BLUE);
-
-        
-        tempCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
-        tempCircuitGraphics = tempCircuit.getGraphicsContext2D();
 
         GridPane.setRowIndex(menuBar, 0);
         GridPane.setColumnIndex(menuBar, 0);
@@ -151,6 +138,16 @@ public class View extends Application{
         GridPane.setRowIndex(circuit, 1);
         GridPane.setColumnIndex(circuit, 1);
         gridPane.getChildren().addAll(menuBar, tools, tempCircuit, circuit);
+    }
+
+    void newCircuit(double frameWidth, double frameHeight){
+        circuitControl.dotSpacing = frameWidth * 0.01;
+        circuitControl.drawCircuitBackground(frameWidth, frameHeight);
+        circuitGraphics.save();
+    }
+
+    void openCircuit(){
+        
     }
 
     public static void main(String[] args){
