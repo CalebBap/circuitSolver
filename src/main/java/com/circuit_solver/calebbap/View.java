@@ -19,7 +19,6 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.input.*;
 
-
 public class View extends Application{
 
     Canvas circuit;
@@ -38,8 +37,6 @@ public class View extends Application{
     
     double tempCompX;
     double tempCompY;
-    
-    boolean userDrawing = false;
 
     public void start(Stage primaryStage){
         primaryStage.setMaximized(true);
@@ -97,7 +94,7 @@ public class View extends Application{
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         circuit.setOnMouseMoved(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if(dotSpacing != 0 && !userDrawing){
+                if(dotSpacing != 0){
                     circuitHover(event.getX(), event.getY());
                 }
             }
@@ -105,27 +102,22 @@ public class View extends Application{
 
         circuit.setOnMouseExited(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                userDrawing = false;
                 clearHover();
             }
         });
 
         circuit.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                userDrawing = true;
                 double[] relativePosition = relativeMousePosition(event.getX(), event.getY());
                 clickX = relativePosition[0];
                 clickY = relativePosition[1]; 
                 circuit.setMouseTransparent(true);
-                //event.setDragDetect(true);
             }
         });
 
         circuit.setOnMouseDragged(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                //if(userDrawing){
                 drawComponent(event.getX(), event.getY());
-                //}
             }
         });
 
@@ -133,8 +125,6 @@ public class View extends Application{
             public void handle(MouseEvent event) {
                 
                 System.out.println("Mouse Released");
-                //event.setDragDetect(false);
-                userDrawing = false;
             }
         });
 
@@ -154,31 +144,39 @@ public class View extends Application{
         GridPane.setColumnIndex(tempCircuit, 1);
         GridPane.setRowIndex(circuit, 1);
         GridPane.setColumnIndex(circuit, 1);
-        gridPane.getChildren().addAll(menuBar, tools, tempCircuit, circuit);
+        gridPane.getChildren().addAll(menuBar, tools, tempCircuit, circuit);   
     }
 
+    double[] relativeMousePosition(double x, double y){
+        Bounds canvasBounds = circuit.getBoundsInParent();
+        double relativeXPostion = x / canvasBounds.getWidth();
+        double relativeYPostion = y / canvasBounds.getHeight();
+        
+        int numDotX = (int) (relativeXPostion * numDots[0] + 1);
+        int numDotY = (int) (relativeYPostion * numDots[1] + 1);
+
+        double[] relativePosition = {(dotSpacing * numDotX), (dotSpacing * numDotY)};
+        return relativePosition;
+    }
+
+    void newCircuit(double frameWidth, double frameHeight){
+        dotSpacing = frameWidth * 0.01;
+        drawCircuitBackground(dotSpacing, frameWidth, frameHeight);
+        circuitGraphics.save();
+    }
+
+    void openCircuit(){}
+
     void drawComponent(double x, double y){
-        /*if( ((x < clickX) || (x > clickX)) && ((y < clickY) || (y > clickY)) ){
-            // Draw component on angle
-        }else if( (x < clickX) || (x > clickX) ){
-            
-        }else{
-            // Draw component on vertically
-        }*/
         double[] relativePosition = relativeMousePosition(x, y);
         x = relativePosition[0];
         y = relativePosition[1];
         tempCircuitGraphics.clearRect(0, 0, tempCircuit.getWidth(), tempCircuit.getHeight());
-        //System.out.printf("drawComponent(%f, %f)", x, y);
         tempCompX = x;
         tempCompY = y;
         tempCircuitGraphics.setStroke(Color.BLACK);
         tempCircuitGraphics.setLineWidth(4);
         tempCircuitGraphics.strokeLine(clickX, clickY, x, y);
-    }
-
-    void clearComponent(){
-
     }
 
     void circuitHover(double x, double y){
@@ -201,19 +199,7 @@ public class View extends Application{
             circuitGraphics.setLineWidth(3);
             circuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
         }
-    }
-
-    double[] relativeMousePosition(double x, double y){
-        Bounds canvasBounds = circuit.getBoundsInParent();
-        double relativeXPostion = x / canvasBounds.getWidth();
-        double relativeYPostion = y / canvasBounds.getHeight();
-        
-        int numDotX = (int) (relativeXPostion * numDots[0] + 1);
-        int numDotY = (int) (relativeYPostion * numDots[1] + 1);
-
-        double[] relativePosition = {(dotSpacing * numDotX), (dotSpacing * numDotY)};
-        return relativePosition;
-    }
+    } 
 
     void drawCircuitBackground(double dotSpacing, double width, double height){
         int numXDots = 0;
@@ -231,16 +217,6 @@ public class View extends Application{
 
         numDots[0] = numXDots;
         numDots[1] = numYDots;
-    }
-
-    void newCircuit(double frameWidth, double frameHeight){
-        dotSpacing = frameWidth * 0.01;
-        drawCircuitBackground(dotSpacing, frameWidth, frameHeight);
-        circuitGraphics.save();
-    }
-
-    void openCircuit(){
-        
     }
 
     public static void main(String[] args){
