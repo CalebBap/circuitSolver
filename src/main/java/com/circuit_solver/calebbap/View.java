@@ -1,29 +1,20 @@
 package com.circuit_solver.calebbap;
 
 import javafx.application.Application;
-
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import javafx.scene.control.MenuItem;
-
-import javafx.event.*;
-import javafx.geometry.Bounds;
-
-import javafx.scene.Scene;
-import javafx.scene.control.*; 
-import javafx.scene.paint.*;
-import javafx.scene.shape.ArcType;
-import javafx.scene.canvas.*;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.input.*;
-
-<<<<<<< HEAD
-=======
-import com.circuit_solver.calebbap.Circuit;
-
->>>>>>> Circuit-Class
 public class View extends Application{
 
     Canvas circuit;
@@ -31,20 +22,8 @@ public class View extends Application{
     Canvas tempCircuit;
     GraphicsContext tempCircuitGraphics;
 
-<<<<<<< HEAD
-    double dotSpacing = 0;
-    double dotXPosition = 0;
-    double dotYPosition = 0;
-
-    double clickX;
-    double clickY;
-    
-    double tempCompX;
-    double tempCompY;
-=======
     Circuit circuitControl;
     Circuit tempCircuitControl;
->>>>>>> Circuit-Class
 
     public void start(Stage primaryStage){
         primaryStage.setMaximized(true);
@@ -110,49 +89,30 @@ public class View extends Application{
 
         circuit.setOnMouseMoved(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-<<<<<<< HEAD
-                if(dotSpacing != 0){
-                    circuitHover(event.getX(), event.getY());
-=======
                 if(circuitControl.dotSpacing != 0){
                     circuitControl.circuitHover(event.getX(), event.getY());
->>>>>>> Circuit-Class
                 }
             }
         });
 
         circuit.setOnMouseExited(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-<<<<<<< HEAD
-                clearHover();
-=======
                 circuitControl.clearHover();
->>>>>>> Circuit-Class
             }
         });
 
         circuit.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-<<<<<<< HEAD
-                double[] relativePosition = relativeMousePosition(event.getX(), event.getY());
-                clickX = relativePosition[0];
-                clickY = relativePosition[1]; 
-=======
                 double[] relativePosition = circuitControl.relativeMousePosition(event.getX(), event.getY());
                 circuitControl.clickX = relativePosition[0];
                 circuitControl.clickY = relativePosition[1]; 
->>>>>>> Circuit-Class
                 circuit.setMouseTransparent(true);
             }
         });
 
         circuit.setOnMouseDragged(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-<<<<<<< HEAD
-                drawComponent(event.getX(), event.getY());
-=======
                 circuitControl.drawComponent(event.getX(), event.getY());
->>>>>>> Circuit-Class
             }
         });
 
@@ -174,78 +134,6 @@ public class View extends Application{
         gridPane.getChildren().addAll(menuBar, tools, tempCircuit, circuit);   
     }
 
-    double[] relativeMousePosition(double x, double y){
-        Bounds canvasBounds = circuit.getBoundsInParent();
-        double relativeXPostion = x / canvasBounds.getWidth();
-        double relativeYPostion = y / canvasBounds.getHeight();
-        
-        int numDotX = (int) (relativeXPostion * numDots[0] + 1);
-        int numDotY = (int) (relativeYPostion * numDots[1] + 1);
-
-        double[] relativePosition = {(dotSpacing * numDotX), (dotSpacing * numDotY)};
-        return relativePosition;
-    }
-
-    void newCircuit(double frameWidth, double frameHeight){
-        dotSpacing = frameWidth * 0.01;
-        drawCircuitBackground(dotSpacing, frameWidth, frameHeight);
-        circuitGraphics.save();
-    }
-
-<<<<<<< HEAD
-    void openCircuit(){}
-
-    void drawComponent(double x, double y){
-        double[] relativePosition = relativeMousePosition(x, y);
-        x = relativePosition[0];
-        y = relativePosition[1];
-        tempCircuitGraphics.clearRect(0, 0, tempCircuit.getWidth(), tempCircuit.getHeight());
-        tempCompX = x;
-        tempCompY = y;
-        tempCircuitGraphics.setStroke(Color.BLACK);
-        tempCircuitGraphics.setLineWidth(4);
-        tempCircuitGraphics.strokeLine(clickX, clickY, x, y);
-    }
-
-    void circuitHover(double x, double y){
-        clearHover();
-        
-        double[] relativePosition = relativeMousePosition(x, y);
-        dotXPosition = relativePosition[0];
-        dotYPosition = relativePosition[1];
-
-        circuitGraphics.setFill(Color.TRANSPARENT);
-        circuitGraphics.setStroke(Color.BLACK);
-        circuitGraphics.setLineWidth(2);
-        circuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
-    }
-
-    void clearHover(){
-        if((dotXPosition + dotYPosition) != 0 ){
-            circuitGraphics.setFill(Color.TRANSPARENT);
-            circuitGraphics.setStroke(Color.WHITE);
-            circuitGraphics.setLineWidth(3);
-            circuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
-        }
-    } 
-
-    void drawCircuitBackground(double dotSpacing, double width, double height){
-        int numXDots = 0;
-        int numYDots = 0;
-
-        for(double x = dotSpacing; x <= ((width * 0.85) - dotSpacing); x+=dotSpacing){
-            for(double y = dotSpacing; y <= ((height * 0.95) - dotSpacing); y+=dotSpacing){
-                circuitGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
-                numYDots++;
-            }
-            numXDots++;
-        }
-
-        numYDots /= numXDots;
-
-        numDots[0] = numXDots;
-        numDots[1] = numYDots;
-=======
     void newCircuit(double frameWidth, double frameHeight){
         circuitControl.dotSpacing = frameWidth * 0.01;
         circuitControl.drawCircuitBackground(frameWidth, frameHeight);
@@ -254,7 +142,6 @@ public class View extends Application{
 
     void openCircuit(){
         
->>>>>>> Circuit-Class
     }
 
     public static void main(String[] args){

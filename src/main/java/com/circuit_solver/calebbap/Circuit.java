@@ -1,21 +1,10 @@
 package com.circuit_solver.calebbap;
 
-import javafx.stage.Stage;
-
-import javafx.scene.control.MenuItem;
-
-import javafx.event.*;
 import javafx.geometry.Bounds;
-
-import javafx.scene.Scene;
-import javafx.scene.control.*; 
-import javafx.scene.paint.*;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
-import javafx.scene.canvas.*;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.RowConstraints;
-import javafx.scene.layout.GridPane;
-import javafx.scene.input.*;
 
 public class Circuit{
 
@@ -32,9 +21,6 @@ public class Circuit{
 
     public double clickX;
     public double clickY;
-    
-    private double tempCompX;
-    private double tempCompY;
 
     Circuit(Canvas circuit, GraphicsContext circuitGraphics, Canvas tempCircuit, GraphicsContext tempCircuitGraphics){
         mainCircuit = circuit;
