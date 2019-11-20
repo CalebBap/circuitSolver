@@ -19,6 +19,8 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.input.*;
 
+import com.circuit_solver.calebbap.Circuit;
+
 
 public class View extends Application{
 
