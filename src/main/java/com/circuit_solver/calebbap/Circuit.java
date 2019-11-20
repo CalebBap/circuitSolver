@@ -34,8 +34,6 @@ public class Circuit{
         x = relativePosition[0];
         y = relativePosition[1];
         mainTempCircuitGraphics.clearRect(0, 0, mainTempCircuit.getWidth(), mainTempCircuit.getHeight());
-        tempCompX = x;
-        tempCompY = y;
         mainTempCircuitGraphics.setStroke(Color.BLACK);
         mainTempCircuitGraphics.setLineWidth(4);
         mainTempCircuitGraphics.strokeLine(clickX, clickY, x, y);
