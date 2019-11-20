@@ -15,13 +15,13 @@ import javafx.stage.Stage;
 
 public class View extends Application{
 
-    Canvas circuit;
-    GraphicsContext circuitGraphics;
-    Circuit circuitControl;
+    private Canvas circuit;
+    private GraphicsContext circuitGraphics;
+    CircuitControl circuitControl;
     
-    Canvas tempCircuit;
-    GraphicsContext tempCircuitGraphics;
-    Circuit tempCircuitControl;
+    private Canvas overlayCircuit;
+    private GraphicsContext overlayCircuitGraphics;
+    CircuitControl overlayCircuitControl;
 
     public void start(Stage primaryStage){
         primaryStage.setMaximized(true);
@@ -79,21 +79,21 @@ public class View extends Application{
         circuitGraphics = circuit.getGraphicsContext2D();
         circuitGraphics.setFill(Color.BLUE);
 
-        tempCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
-        tempCircuitGraphics = tempCircuit.getGraphicsContext2D();
+        overlayCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
+        overlayCircuitGraphics = overlayCircuit.getGraphicsContext2D();
         
-        circuitControl = new Circuit(circuit, circuitGraphics, tempCircuit, tempCircuitGraphics, frameWidth);
+        circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics, frameWidth);
 
         GridPane.setRowIndex(menuBar, 0);
         GridPane.setColumnIndex(menuBar, 0);
         GridPane.setColumnSpan(menuBar, 2);
         GridPane.setRowIndex(tools, 1);
         GridPane.setColumnIndex(tools, 0);
-        GridPane.setRowIndex(tempCircuit, 1);
-        GridPane.setColumnIndex(tempCircuit, 1);
+        GridPane.setRowIndex(overlayCircuit, 1);
+        GridPane.setColumnIndex(overlayCircuit, 1);
         GridPane.setRowIndex(circuit, 1);
         GridPane.setColumnIndex(circuit, 1);
-        gridPane.getChildren().addAll(menuBar, tools, tempCircuit, circuit);   
+        gridPane.getChildren().addAll(menuBar, tools, overlayCircuit, circuit);   
     }
 
     void newCircuit(double frameWidth, double frameHeight){

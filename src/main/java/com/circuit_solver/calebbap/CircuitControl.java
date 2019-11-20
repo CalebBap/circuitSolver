@@ -9,12 +9,12 @@ import javafx.scene.shape.ArcType;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 
-public class Circuit{
+public class CircuitControl{
 
-    private Canvas mainCircuit;
-    private GraphicsContext mainCircuitGraphics;
-    private Canvas mainTempCircuit;
-    private GraphicsContext mainTempCircuitGraphics;
+    private Canvas circuit;
+    private GraphicsContext circuitGraphics;
+    private Canvas overlayCircuit;
+    private GraphicsContext overlayCircuitGraphics;
     
     private int[] numDots = {0, 0};
 
@@ -25,22 +25,23 @@ public class Circuit{
     private double clickX;
     private double clickY;
 
-    Circuit(Canvas circuit, GraphicsContext circuitGraphics, Canvas tempCircuit, GraphicsContext tempCircuitGraphics, double frameWidth){
-        mainCircuit = circuit;
-        mainCircuitGraphics = circuitGraphics;
-        mainTempCircuit = tempCircuit;
-        mainTempCircuitGraphics = tempCircuitGraphics;
-        dotSpacing  = frameWidth * 0.01;
+    CircuitControl(Canvas newCircuit, GraphicsContext newCircuitGraphics, Canvas newOverlayCircuit, 
+        GraphicsContext newOverlayCircuitGraphics, double frameWidth){
+            circuit = newCircuit;
+            circuitGraphics = newCircuitGraphics;
+            overlayCircuit = newOverlayCircuit;
+            overlayCircuitGraphics = newOverlayCircuitGraphics;
+            dotSpacing  = frameWidth * 0.01;
     }
 
     void drawComponent(double x, double y){
         double[] relativePosition = relativeMousePosition(x, y);
         x = relativePosition[0];
         y = relativePosition[1];
-        mainTempCircuitGraphics.clearRect(0, 0, mainTempCircuit.getWidth(), mainTempCircuit.getHeight());
-        mainTempCircuitGraphics.setStroke(Color.BLACK);
-        mainTempCircuitGraphics.setLineWidth(4);
-        mainTempCircuitGraphics.strokeLine(clickX, clickY, x, y);
+        overlayCircuitGraphics.clearRect(0, 0, overlayCircuit.getWidth(), overlayCircuit.getHeight());
+        overlayCircuitGraphics.setStroke(Color.BLACK);
+        overlayCircuitGraphics.setLineWidth(4);
+        overlayCircuitGraphics.strokeLine(clickX, clickY, x, y);
     }
 
     void clearComponent(){
@@ -54,23 +55,23 @@ public class Circuit{
         dotXPosition = relativePosition[0];
         dotYPosition = relativePosition[1];
 
-        mainCircuitGraphics.setFill(Color.TRANSPARENT);
-        mainCircuitGraphics.setStroke(Color.BLACK);
-        mainCircuitGraphics.setLineWidth(2);
-        mainCircuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
+        circuitGraphics.setFill(Color.TRANSPARENT);
+        circuitGraphics.setStroke(Color.BLACK);
+        circuitGraphics.setLineWidth(2);
+        circuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
     }
 
     void clearHover(){
         if((dotXPosition + dotYPosition) != 0 ){
-            mainCircuitGraphics.setFill(Color.TRANSPARENT);
-            mainCircuitGraphics.setStroke(Color.WHITE);
-            mainCircuitGraphics.setLineWidth(3);
-            mainCircuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
+            circuitGraphics.setFill(Color.TRANSPARENT);
+            circuitGraphics.setStroke(Color.WHITE);
+            circuitGraphics.setLineWidth(3);
+            circuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
         }
     }
 
     double[] relativeMousePosition(double x, double y){
-        Bounds canvasBounds = mainCircuit.getBoundsInParent();
+        Bounds canvasBounds = circuit.getBoundsInParent();
         double relativeXPostion = x / canvasBounds.getWidth();
         double relativeYPostion = y / canvasBounds.getHeight();
         
@@ -87,7 +88,7 @@ public class Circuit{
 
         for(double x = dotSpacing; x <= ((width * 0.85) - dotSpacing); x+=dotSpacing){
             for(double y = dotSpacing; y <= ((height * 0.95) - dotSpacing); y+=dotSpacing){
-                mainCircuitGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
+                circuitGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
                 numYDots++;
             }
             numXDots++;
@@ -100,7 +101,7 @@ public class Circuit{
     }
 
     void mouseControl(){
-        mainCircuit.setOnMouseMoved(new EventHandler<MouseEvent>() {
+        circuit.setOnMouseMoved(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 if(dotSpacing != 0){
                     circuitHover(event.getX(), event.getY());
@@ -108,28 +109,28 @@ public class Circuit{
             }
         });
 
-        mainCircuit.setOnMouseExited(new EventHandler<MouseEvent>() {
+        circuit.setOnMouseExited(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 clearHover();
             }
         });
 
-        mainCircuit.setOnMousePressed(new EventHandler<MouseEvent>() {
+        circuit.setOnMousePressed(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 double[] relativePosition = relativeMousePosition(event.getX(), event.getY());
                 clickX = relativePosition[0];
                 clickY = relativePosition[1]; 
-                mainCircuit.setMouseTransparent(true);
+                circuit.setMouseTransparent(true);
             }
         });
 
-        mainCircuit.setOnMouseDragged(new EventHandler<MouseEvent>() {
+        circuit.setOnMouseDragged(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 drawComponent(event.getX(), event.getY());
             }
         });
 
-        mainCircuit.setOnMouseReleased(new EventHandler<MouseEvent>() {
+        circuit.setOnMouseReleased(new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 System.out.println("Mouse Released");
             }
