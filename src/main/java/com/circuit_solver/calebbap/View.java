@@ -121,13 +121,8 @@ public class View extends Application{
         GridPane.setColumnSpan(menuBar, 2);
         GridPane.setRowIndex(tools, 1);
         GridPane.setColumnIndex(tools, 0);
-        /*GridPane.setRowIndex(overlayCircuit, 1);
-        GridPane.setColumnIndex(overlayCircuit, 1);
-        GridPane.setRowIndex(circuit, 1);
-        GridPane.setColumnIndex(circuit, 1);*/
         GridPane.setRowIndex(noCircuitText, 1);
-        GridPane.setColumnIndex(noCircuitText, 1);
-        //gridPane.getChildren().addAll(menuBar, tools, overlayCircuit, circuit);   
+        GridPane.setColumnIndex(noCircuitText, 1);  
         root.getChildren().addAll(menuBar, tools, noCircuitText);   
     }
 
