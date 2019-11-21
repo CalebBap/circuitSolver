@@ -1,6 +1,7 @@
 package com.circuit_solver.calebbap;
 
 import javafx.application.Application;
+
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -10,7 +11,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
-import javafx.scene.paint.Color;
+
 import javafx.stage.Stage;
 
 public class View extends Application{
@@ -77,7 +78,6 @@ public class View extends Application{
 
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         circuitGraphics = circuit.getGraphicsContext2D();
-        circuitGraphics.setFill(Color.BLUE);
 
         overlayCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         overlayCircuitGraphics = overlayCircuit.getGraphicsContext2D();
