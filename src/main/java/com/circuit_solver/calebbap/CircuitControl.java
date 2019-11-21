@@ -58,25 +58,19 @@ public class CircuitControl{
     }
 
     void circuitHover(double x, double y){
-        clearHover();
-        
+        clearOverlay();
+
         double[] relativePosition = relativeMousePosition(x, y);
         dotXPosition = relativePosition[0];
         dotYPosition = relativePosition[1];
 
-        circuitGraphics.setFill(Color.TRANSPARENT);
-        circuitGraphics.setStroke(Color.BLACK);
-        circuitGraphics.setLineWidth(2);
-        circuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
+        overlayCircuitGraphics.setStroke(Color.BLACK);
+        overlayCircuitGraphics.setLineWidth(2);
+        overlayCircuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
     }
 
-    void clearHover(){
-        if((dotXPosition + dotYPosition) != 0 ){
-            circuitGraphics.setFill(Color.TRANSPARENT);
-            circuitGraphics.setStroke(Color.WHITE);
-            circuitGraphics.setLineWidth(3);
-            circuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
-        }
+    void clearOverlay(){
+        overlayCircuitGraphics.clearRect(0, 0, overlayCircuit.getWidth(), overlayCircuit.getHeight());
     }
 
     double[] relativeMousePosition(double x, double y){
@@ -102,7 +96,7 @@ public class CircuitControl{
         
         final EventHandler<MouseEvent> mouseExited = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                clearHover();
+                clearOverlay();
             }
         };
 
@@ -137,14 +131,14 @@ public class CircuitControl{
         double[] relativePosition = relativeMousePosition(x, y);
         componentEndX = relativePosition[0];
         componentEndY = relativePosition[1];
-        overlayCircuitGraphics.clearRect(0, 0, overlayCircuit.getWidth(), overlayCircuit.getHeight());
+        clearOverlay();
         overlayCircuitGraphics.setStroke(Color.BLACK);
         overlayCircuitGraphics.setLineWidth(4);
         overlayCircuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
     }
 
     void drawComponent(){
-        overlayCircuitGraphics.clearRect(0, 0, overlayCircuit.getWidth(), overlayCircuit.getHeight());
+        clearOverlay();
 
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
