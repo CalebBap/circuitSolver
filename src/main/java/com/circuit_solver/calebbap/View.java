@@ -2,6 +2,9 @@ package com.circuit_solver.calebbap;
 
 import javafx.application.Application;
 
+import javafx.event.EventHandler;
+import javafx.event.ActionEvent;
+
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -11,6 +14,10 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.control.Button;
+import javafx.scene.text.TextFlow;
+import javafx.scene.text.Text;
+import javafx.scene.control.Hyperlink;
 
 import javafx.stage.Stage;
 
@@ -56,7 +63,6 @@ public class View extends Application{
         gridPane.getColumnConstraints().add(col0);
         gridPane.getRowConstraints().add(row1);
         gridPane.getColumnConstraints().add(col1);
-        gridPane.setGridLinesVisible(true); // For debug
         
         
         MenuBar menuBar = new MenuBar();
@@ -75,6 +81,8 @@ public class View extends Application{
         menuBar.getMenus().add(menuItem);
         
         GridPane tools = new GridPane();
+        Button wireButton = new Button("Wire");
+        tools.add(wireButton, 0, 0);
 
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         circuitGraphics = circuit.getGraphicsContext2D();
@@ -84,19 +92,47 @@ public class View extends Application{
         
         circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics, frameWidth);
 
+        Hyperlink newLink = new Hyperlink("new");
+        newLink.setOnAction(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent event) {
+                newCircuit(frameWidth, frameHeight);
+            }
+            
+        });
+
+        Hyperlink openLink = new Hyperlink("open");
+        openLink.setOnAction(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent event) {
+                openCircuit();
+            }
+            
+        });
+
+        TextFlow flow = new TextFlow(
+            new Text("Create a"), newLink, new Text("circuit or"), openLink, new Text("an existing circuit to continue.")
+        );
+        flow.setId("noCircuitText");
+
         GridPane.setRowIndex(menuBar, 0);
         GridPane.setColumnIndex(menuBar, 0);
         GridPane.setColumnSpan(menuBar, 2);
         GridPane.setRowIndex(tools, 1);
         GridPane.setColumnIndex(tools, 0);
+        /*GridPane.setRowIndex(overlayCircuit, 1);
+        GridPane.setColumnIndex(overlayCircuit, 1);
+        GridPane.setRowIndex(circuit, 1);
+        GridPane.setColumnIndex(circuit, 1);*/
+        GridPane.setRowIndex(flow, 1);
+        GridPane.setColumnIndex(flow, 1);
+        //gridPane.getChildren().addAll(menuBar, tools, overlayCircuit, circuit);   
+        gridPane.getChildren().addAll(menuBar, tools, flow);   
+    }
+
+    void newCircuit(double frameWidth, double frameHeight){
         GridPane.setRowIndex(overlayCircuit, 1);
         GridPane.setColumnIndex(overlayCircuit, 1);
         GridPane.setRowIndex(circuit, 1);
         GridPane.setColumnIndex(circuit, 1);
-        gridPane.getChildren().addAll(menuBar, tools, overlayCircuit, circuit);   
-    }
-
-    void newCircuit(double frameWidth, double frameHeight){
         circuitControl.drawCircuitBackground(frameWidth, frameHeight);
         circuitControl.mouseControl();
     }

@@ -132,9 +132,10 @@ public class CircuitControl{
         componentEndX = relativePosition[0];
         componentEndY = relativePosition[1];
         clearOverlay();
+        circuitHover(x, y);
         overlayCircuitGraphics.setStroke(Color.BLACK);
         overlayCircuitGraphics.setLineWidth(4);
-        overlayCircuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
+        overlayCircuitGraphics.strokeLine(clickX, clickY + 1, componentEndX, componentEndY + 1);
     }
 
     void drawComponent(){

@@ -1,3 +1,7 @@
 #root{
     -fx-background-color: white;
 }
+
+#noCircuitText{
+    -fx-font-size: 14px;
+}
