@@ -2,6 +2,8 @@ package com.circuit_solver.calebbap;
 
 import javafx.application.Application;
 
+import javafx.geometry.Pos;
+
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
 
@@ -14,9 +16,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.scene.text.TextFlow;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.control.Hyperlink;
 
 import javafx.stage.Stage;
@@ -32,7 +36,7 @@ public class View extends Application{
     CircuitControl overlayCircuitControl;
 
     GridPane root;
-    TextFlow noCircuitText;
+    VBox noCircuit;
 
     public void start(Stage primaryStage){
         primaryStage.setMaximized(true);
@@ -61,7 +65,7 @@ public class View extends Application{
         col0.setPercentWidth(15);
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(85);
-
+        
         root.getRowConstraints().add(row0);
         root.getColumnConstraints().add(col0);
         root.getRowConstraints().add(row1);
@@ -111,23 +115,28 @@ public class View extends Application{
             
         });
 
-        noCircuitText = new TextFlow(
-            new Text("Create a"), newLink, new Text("circuit or"), openLink, new Text("an existing circuit to continue.")
+        noCircuit = new VBox();
+        noCircuit.setAlignment(Pos.CENTER);
+        TextFlow noCircuitText = new TextFlow(
+            new Text("Create a"), newLink, new Text("circuit or"), openLink, 
+            new Text("an existing circuit to continue.")
         );
         noCircuitText.setId("noCircuitText");
+        noCircuitText.setTextAlignment(TextAlignment.CENTER);
+        noCircuit.getChildren().add(noCircuitText);
 
         GridPane.setRowIndex(menuBar, 0);
         GridPane.setColumnIndex(menuBar, 0);
         GridPane.setColumnSpan(menuBar, 2);
         GridPane.setRowIndex(tools, 1);
         GridPane.setColumnIndex(tools, 0);
-        GridPane.setRowIndex(noCircuitText, 1);
-        GridPane.setColumnIndex(noCircuitText, 1);  
-        root.getChildren().addAll(menuBar, tools, noCircuitText);   
+        GridPane.setRowIndex(noCircuit, 1);
+        GridPane.setColumnIndex(noCircuit, 1);  
+        root.getChildren().addAll(menuBar, tools, noCircuit);   
     }
 
     void newCircuit(double frameWidth, double frameHeight){
-        root.getChildren().remove(noCircuitText);
+        root.getChildren().remove(noCircuit);
         GridPane.setRowIndex(overlayCircuit, 1);
         GridPane.setColumnIndex(overlayCircuit, 1);
         GridPane.setRowIndex(circuit, 1);
