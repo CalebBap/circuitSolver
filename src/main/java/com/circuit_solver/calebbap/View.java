@@ -31,11 +31,14 @@ public class View extends Application{
     private GraphicsContext overlayCircuitGraphics;
     CircuitControl overlayCircuitControl;
 
+    GridPane root;
+    TextFlow noCircuitText;
+
     public void start(Stage primaryStage){
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Circuit Solver");
         
-        GridPane root = new GridPane();
+        root = new GridPane();
         root.setId("root");
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("/primary.css").toExternalForm());
@@ -43,12 +46,12 @@ public class View extends Application{
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        frameOne(root);   
+        frameOne();   
     } 
 
-    public void frameOne(GridPane gridPane){
-        double frameHeight = gridPane.getHeight();
-        double frameWidth =  gridPane.getWidth();
+    public void frameOne(){
+        double frameHeight = root.getHeight();
+        double frameWidth =  root.getWidth();
         
         RowConstraints row0 = new RowConstraints();
         row0.setPercentHeight(5);
@@ -59,10 +62,10 @@ public class View extends Application{
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(85);
 
-        gridPane.getRowConstraints().add(row0);
-        gridPane.getColumnConstraints().add(col0);
-        gridPane.getRowConstraints().add(row1);
-        gridPane.getColumnConstraints().add(col1);
+        root.getRowConstraints().add(row0);
+        root.getColumnConstraints().add(col0);
+        root.getRowConstraints().add(row1);
+        root.getColumnConstraints().add(col1);
         
         
         MenuBar menuBar = new MenuBar();
@@ -108,10 +111,10 @@ public class View extends Application{
             
         });
 
-        TextFlow flow = new TextFlow(
+        noCircuitText = new TextFlow(
             new Text("Create a"), newLink, new Text("circuit or"), openLink, new Text("an existing circuit to continue.")
         );
-        flow.setId("noCircuitText");
+        noCircuitText.setId("noCircuitText");
 
         GridPane.setRowIndex(menuBar, 0);
         GridPane.setColumnIndex(menuBar, 0);
@@ -122,17 +125,19 @@ public class View extends Application{
         GridPane.setColumnIndex(overlayCircuit, 1);
         GridPane.setRowIndex(circuit, 1);
         GridPane.setColumnIndex(circuit, 1);*/
-        GridPane.setRowIndex(flow, 1);
-        GridPane.setColumnIndex(flow, 1);
+        GridPane.setRowIndex(noCircuitText, 1);
+        GridPane.setColumnIndex(noCircuitText, 1);
         //gridPane.getChildren().addAll(menuBar, tools, overlayCircuit, circuit);   
-        gridPane.getChildren().addAll(menuBar, tools, flow);   
+        root.getChildren().addAll(menuBar, tools, noCircuitText);   
     }
 
     void newCircuit(double frameWidth, double frameHeight){
+        root.getChildren().remove(noCircuitText);
         GridPane.setRowIndex(overlayCircuit, 1);
         GridPane.setColumnIndex(overlayCircuit, 1);
         GridPane.setRowIndex(circuit, 1);
         GridPane.setColumnIndex(circuit, 1);
+        root.getChildren().addAll(overlayCircuit, circuit);
         circuitControl.drawCircuitBackground(frameWidth, frameHeight);
         circuitControl.mouseControl();
     }
