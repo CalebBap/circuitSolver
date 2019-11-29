@@ -29,13 +29,16 @@ public class CircuitControl{
     private double componentEndX;
     private double componentEndY;
 
+    private Model model;
+
     CircuitControl(Canvas newCircuit, GraphicsContext newCircuitGraphics, Canvas newOverlayCircuit, 
-        GraphicsContext newOverlayCircuitGraphics, double frameWidth){
+        GraphicsContext newOverlayCircuitGraphics, double frameWidth, Model newModel){
             circuit = newCircuit;
             circuitGraphics = newCircuitGraphics;
             overlayCircuit = newOverlayCircuit;
             overlayCircuitGraphics = newOverlayCircuitGraphics;
             dotSpacing  = frameWidth * 0.01;
+            model = newModel;
     }
 
     void drawCircuitBackground(double width, double height){
@@ -102,15 +105,19 @@ public class CircuitControl{
 
         final EventHandler<MouseEvent> mousePressed = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                double[] relativePosition = relativeMousePosition(event.getX(), event.getY());
-                clickX = relativePosition[0];
-                clickY = relativePosition[1]; 
+                if(withinBounds(event.getX(), event.getY())){
+                    double[] relativePosition = relativeMousePosition(event.getX(), event.getY());
+                    clickX = relativePosition[0];
+                    clickY = relativePosition[1]; 
+                }
             }
         };
 
         final EventHandler<MouseEvent> dragged = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                drawOverlayComponent(event.getX(), event.getY());
+                if(withinBounds(event.getX(), event.getY())){
+                    drawOverlayComponent(event.getX(), event.getY());
+                }
             }
         };
 
@@ -144,5 +151,23 @@ public class CircuitControl{
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
         circuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
+        model.write(clickX, clickY, componentEndX, componentEndY);
+    }
+
+    void drawComponent(double startX, double startY, double endX, double endY){
+        circuitGraphics.setStroke(Color.BLACK);
+        circuitGraphics.setLineWidth(4);
+        circuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
+    }
+
+    Boolean withinBounds(double x, double y){
+        Bounds canvasBounds = circuit.getBoundsInLocal();
+
+        if( x > canvasBounds.getMaxX() || x < canvasBounds.getMinX() || 
+            y > canvasBounds.getMaxY() || y < canvasBounds.getMinY() ){
+                return false;
+        }
+        
+        return true;
     }
 }

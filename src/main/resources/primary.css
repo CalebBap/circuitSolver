@@ -5,3 +5,7 @@
 #noCircuitText{
     -fx-font-size: 24px;
 }
+
+#wire{
+    /* -fx-background-color: white; */
+}
