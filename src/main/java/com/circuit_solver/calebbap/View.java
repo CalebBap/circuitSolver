@@ -68,7 +68,7 @@ public class View extends Application {
         double frameWidth =  root.getWidth();
         
         RowConstraints row0 = new RowConstraints();
-        row0.setPercentHeight(5);
+        row0.setPercentHeight(4);
         RowConstraints row1 = new RowConstraints();
         row1.setPercentHeight(95);
         ColumnConstraints col0 = new ColumnConstraints();
@@ -96,6 +96,8 @@ public class View extends Application {
         menuBar.getMenus().add(menuItem);
         
         GridPane tools = new GridPane();
+        tools.setId("toolsGrid");
+
         Button wireButton = new Button("Wire");
         wireButton.setId("wire");
         tools.add(wireButton, 0, 0);

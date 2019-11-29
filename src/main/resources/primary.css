@@ -9,3 +9,7 @@
 #wire{
     /* -fx-background-color: white; */
 }
+
+#toolsGrid{
+    -fx-background-color: #EEEEEE;
+}

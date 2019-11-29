@@ -12,7 +12,7 @@ import javafx.stage.FileChooser.ExtensionFilter;
 
 public class Model{
     private File file;
-    private PrintWriter writer;
+    private PrintWriter writer = null;
     private Scanner reader;
 
     Boolean init(Boolean newCircuit){
@@ -103,6 +103,8 @@ public class Model{
     }
 
     void closeFile(){
-        writer.close();
+        if(writer != null){
+            writer.close();
+        }
     }
 }
