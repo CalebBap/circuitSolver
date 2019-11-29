@@ -102,9 +102,6 @@ public class View extends Application{
 
         overlayCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         overlayCircuitGraphics = overlayCircuit.getGraphicsContext2D();
-        
-        /*circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics, 
-            frameWidth);*/
 
         model = new Model();
 
@@ -144,14 +141,24 @@ public class View extends Application{
         root.getChildren().addAll(menuBar, tools, noCircuit);   
     }
 
-    void newCircuit(double frameWidth, double frameHeight){
-        if(model.init(true)){
+    void initCircuit(){
+        Boolean firstCircuit = !(root.getChildren().contains(circuit));
+        
+        if(firstCircuit){
             root.getChildren().remove(noCircuit);
             GridPane.setRowIndex(overlayCircuit, 1);
             GridPane.setColumnIndex(overlayCircuit, 1);
             GridPane.setRowIndex(circuit, 1);
             GridPane.setColumnIndex(circuit, 1);
             root.getChildren().addAll(overlayCircuit, circuit);
+        }else{
+            circuitGraphics.clearRect(0, 0, circuit.getWidth(), circuit.getHeight());
+        }
+    }
+
+    void newCircuit(double frameWidth, double frameHeight){
+        if(model.init(true)){
+            initCircuit();
             circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics, 
                 frameWidth, model);
             circuitControl.drawCircuitBackground(frameWidth, frameHeight);
@@ -161,12 +168,7 @@ public class View extends Application{
 
     void openCircuit(double frameWidth, double frameHeight){
         if(model.init(false)){
-            root.getChildren().remove(noCircuit);
-            GridPane.setRowIndex(overlayCircuit, 1);
-            GridPane.setColumnIndex(overlayCircuit, 1);
-            GridPane.setRowIndex(circuit, 1);
-            GridPane.setColumnIndex(circuit, 1);
-            root.getChildren().addAll(overlayCircuit, circuit);
+            initCircuit();
             circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics, 
                 frameWidth, model);
             circuitControl.drawCircuitBackground(frameWidth, frameHeight);

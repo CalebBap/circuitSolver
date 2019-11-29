@@ -17,12 +17,13 @@ public class Model{
 
     Boolean init(Boolean newCircuit){
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Circuit File");
         fileChooser.getExtensionFilters().add(new ExtensionFilter("Circuit", "*.crc"));
         
         if(newCircuit){
+            fileChooser.setTitle("Save Circuit File");
             file = fileChooser.showSaveDialog(View.getStage());
         }else{
+            fileChooser.setTitle("Open Circuit File");
             file = fileChooser.showOpenDialog(View.getStage());
         }
 
@@ -50,6 +51,8 @@ public class Model{
             return false;
         }
         
+        View.getStage().setTitle("Circuit Solver - " + file.getName());
+
         return true;
     }
 
