@@ -29,7 +29,7 @@ public class View extends Application{
 
     private Canvas circuit;
     private GraphicsContext circuitGraphics;
-    CircuitControl circuitControl;
+    static CircuitControl circuitControl;
     
     private Canvas overlayCircuit;
     private GraphicsContext overlayCircuitGraphics;
@@ -167,10 +167,11 @@ public class View extends Application{
         return stage;
     }
 
+    public static CircuitControl getCircuitControl(){
+        return circuitControl;
+    }
+
     public void stop(){
-
-        model.read(); // TEMP FOR TESTING
-
         model.closeFile();
     }
 

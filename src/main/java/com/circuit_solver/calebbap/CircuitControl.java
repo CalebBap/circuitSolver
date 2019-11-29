@@ -151,13 +151,14 @@ public class CircuitControl{
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
         circuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
-        model.write(clickX, clickY, componentEndX, componentEndY);
+        Coordinate coordinate = new Coordinate(clickX, clickY, componentEndX, componentEndY);
+        model.write(coordinate);
     }
 
-    void drawComponent(double startX, double startY, double endX, double endY){
+    void drawComponent(Coordinate coordinate){
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
-        circuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
+        circuitGraphics.strokeLine(coordinate.startX, coordinate.startY, coordinate.endX, coordinate.endY);
     }
 
     Boolean withinBounds(double x, double y){
@@ -167,7 +168,7 @@ public class CircuitControl{
             y > canvasBounds.getMaxY() || y < canvasBounds.getMinY() ){
                 return false;
         }
-        
+
         return true;
     }
 }

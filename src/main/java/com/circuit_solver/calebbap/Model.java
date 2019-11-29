@@ -2,29 +2,19 @@ package com.circuit_solver.calebbap;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.regex.Pattern;
+
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class Model{
     private File file;
     private PrintWriter writer;
     private Scanner reader;
 
-    private int additionNum;
-
-    Model(){
-        additionNum = 0;
-    }
-
     Boolean init(){
-        // Is this needed cause writing to file will probably create it
-            // Maybe define placement and name of file here
-        
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Circuit File");
         fileChooser.getExtensionFilters().add(new ExtensionFilter("Circuit", "*.crc"));
@@ -49,55 +39,39 @@ public class Model{
         return true;
     }
 
-    void write(double startX, double startY, double endX, double endY){
-        writer.println("#" + Integer.toString(additionNum) + " " + Double.toString(startX) + " " + Double.toString(startY) + " " + 
-            Double.toString(endX) + " " +  Double.toString(endY));
+    void write(Coordinate coordinate){
+        writer.println(Double.toString(coordinate.startX) + " " + Double.toString(coordinate.startY) + " " + 
+            Double.toString(coordinate.endX) + " " +  Double.toString(coordinate.endY));
         writer.flush();
-        additionNum++;
     }
 
-    void read(){
+    ArrayList<Coordinate> read(){
         double[] values = {0, 0, 0, 0};
-        int lineNum;
+        Coordinate coordinates;
+        ArrayList<Coordinate> valueList = new ArrayList<Coordinate>();
 
         int index = 0;
 
         while(reader.hasNext()){
-            String read = reader.next();
-            if(read.charAt(0) == '#'){
-                System.out.println("Line number = " + read.substring(1));
-                try{
-                    lineNum = Integer.parseInt(read.substring(1));
-                }catch(NumberFormatException e){
-                    e.printStackTrace();
-                }
-            }else{
-                values[index] = Double.parseDouble(read);
-            }
-            
+            values[index] = Double.parseDouble(reader.next());
             if(index == 3){
                 index = 0;
+                coordinates = new Coordinate(values[0], values[1], values[2], values[3]);
+                valueList.add(coordinates);
             }else{
                 index++;
             }
         }
-        
-        double startX = values[0];
-        double startY = values[1];
-        double endX = values[2];
-        double endY = values[3];
 
-        System.out.println("startX = " + Double.toString(startX));
-        System.out.println("startY = " + Double.toString(startY));
-        System.out.println("endX = " + Double.toString(endX));
-        System.out.println("endY = " + Double.toString(endY));
-
-
-        //REMOVE TEST CALL FROM CLOSE() in View.java
+        return valueList;
     }
 
     void draw(){
-
+        ArrayList<Coordinate> coordinates = read();
+        for(int x = 0; x < coordinates.size(); x++){
+            Coordinate coordinate = coordinates.get(x);
+            View.getCircuitControl().drawComponent(coordinate);
+        }
     }
 
     void undo(){
