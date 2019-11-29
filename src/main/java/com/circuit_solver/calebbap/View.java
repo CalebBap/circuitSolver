@@ -6,7 +6,7 @@ import javafx.geometry.Pos;
 
 import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
-
+import javafx.event.Event;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -23,14 +23,19 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.control.Hyperlink;
 
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCode;
+
 import javafx.stage.Stage;
 
-public class View extends Application{
+public class View extends Application {
 
     private Canvas circuit;
     private GraphicsContext circuitGraphics;
     static CircuitControl circuitControl;
-    
+
     private Canvas overlayCircuit;
     private GraphicsContext overlayCircuitGraphics;
     CircuitControl overlayCircuitControl;
@@ -42,11 +47,11 @@ public class View extends Application{
 
     private static Stage stage;
 
-    public void start(Stage primaryStage){
+    public void start(Stage primaryStage) {
         stage = primaryStage;
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Circuit Solver");
-        
+
         root = new GridPane();
         root.setId("root");
         Scene scene = new Scene(root);
@@ -78,8 +83,6 @@ public class View extends Application{
         
         
         MenuBar menuBar = new MenuBar();
-        //menuBar.setMinHeight(frameHeight * 0.05);
-        //menuBar.setMaxHeight(frameWidth * 0.05);
 
         final Menu menuItem = new Menu("File");
         
@@ -141,7 +144,7 @@ public class View extends Application{
         root.getChildren().addAll(menuBar, tools, noCircuit);   
     }
 
-    void initCircuit(){
+    void initCircuit(double frameWidth, double frameHeight){
         Boolean firstCircuit = !(root.getChildren().contains(circuit));
         
         if(firstCircuit){
@@ -151,30 +154,27 @@ public class View extends Application{
             GridPane.setRowIndex(circuit, 1);
             GridPane.setColumnIndex(circuit, 1);
             root.getChildren().addAll(overlayCircuit, circuit);
+
+            circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics, 
+                frameWidth, model);
+            circuitControl.drawCircuitBackground(frameWidth, frameHeight);
+            circuitControl.mouseControl();
         }else{
             circuitGraphics.clearRect(0, 0, circuit.getWidth(), circuit.getHeight());
+            circuitControl.drawCircuitBackground(frameWidth, frameHeight);
         }
     }
 
     void newCircuit(double frameWidth, double frameHeight){
         if(model.init(true)){
-            initCircuit();
-            circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics, 
-                frameWidth, model);
-            circuitControl.drawCircuitBackground(frameWidth, frameHeight);
-            circuitControl.mouseControl();
+            initCircuit(frameWidth, frameHeight);
         }
     }
 
     void openCircuit(double frameWidth, double frameHeight){
         if(model.init(false)){
-            initCircuit();
-            circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics, 
-                frameWidth, model);
-            circuitControl.drawCircuitBackground(frameWidth, frameHeight);
-            circuitControl.mouseControl();
-
-            model.draw();
+            initCircuit(frameWidth, frameHeight);
+            model.drawFromFile();
         }   
     }
 

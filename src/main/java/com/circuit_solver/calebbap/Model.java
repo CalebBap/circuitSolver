@@ -17,7 +17,10 @@ public class Model{
 
     Boolean init(Boolean newCircuit){
         FileChooser fileChooser = new FileChooser();
+        File initialDirectory = new File(System.getProperty("user.home") + File.separator);
+        
         fileChooser.getExtensionFilters().add(new ExtensionFilter("Circuit", "*.crc"));
+        fileChooser.setInitialDirectory(initialDirectory);
         
         if(newCircuit){
             fileChooser.setTitle("Save Circuit File");
@@ -83,7 +86,7 @@ public class Model{
         return valueList;
     }
 
-    void draw(){
+    void drawFromFile(){
         ArrayList<Coordinate> coordinates = read();
         for(int x = 0; x < coordinates.size(); x++){
             Coordinate coordinate = coordinates.get(x);
