@@ -2,6 +2,7 @@ package com.circuit_solver.calebbap;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -14,20 +15,33 @@ public class Model{
     private PrintWriter writer;
     private Scanner reader;
 
-    Boolean init(){
+    Boolean init(Boolean newCircuit){
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Circuit File");
         fileChooser.getExtensionFilters().add(new ExtensionFilter("Circuit", "*.crc"));
-        file = fileChooser.showSaveDialog(View.getStage());
+        
+        if(newCircuit){
+            file = fileChooser.showSaveDialog(View.getStage());
+        }else{
+            file = fileChooser.showOpenDialog(View.getStage());
+        }
 
         if(file == null){
             return false; 
         }
 
-        try{
-            writer = new PrintWriter(file);
-        }catch(FileNotFoundException e){
-            return false;
+        if(newCircuit){
+            try{
+                writer = new PrintWriter(file);
+            }catch(FileNotFoundException e){
+                return false;
+            }
+        }else{
+            try{
+                writer = new PrintWriter(new FileWriter(file, true));
+            }catch(Exception e){
+                return false;
+            }
         }
 
         try{

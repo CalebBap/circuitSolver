@@ -151,6 +151,7 @@ public class CircuitControl{
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
         circuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
+        
         Coordinate coordinate = new Coordinate(clickX, clickY, componentEndX, componentEndY);
         model.write(coordinate);
     }

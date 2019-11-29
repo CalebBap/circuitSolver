@@ -87,7 +87,7 @@ public class View extends Application{
         menuFileNew.setOnAction(event -> { newCircuit(frameWidth, frameHeight); });
 
         MenuItem menuFileOpen = new MenuItem("Open Circuit");
-        menuFileOpen.setOnAction(event -> { openCircuit(); });
+        menuFileOpen.setOnAction(event -> { openCircuit(frameWidth, frameHeight); });
 
         menuItem.getItems().addAll(menuFileNew, menuFileOpen);
         menuBar.getMenus().add(menuItem);
@@ -119,7 +119,7 @@ public class View extends Application{
         Hyperlink openLink = new Hyperlink("open");
         openLink.setOnAction(new EventHandler<ActionEvent>(){
             public void handle(ActionEvent event) {
-                openCircuit();
+                openCircuit(frameWidth, frameHeight);
             }
             
         });
@@ -145,7 +145,7 @@ public class View extends Application{
     }
 
     void newCircuit(double frameWidth, double frameHeight){
-        if(model.init()){
+        if(model.init(true)){
             root.getChildren().remove(noCircuit);
             GridPane.setRowIndex(overlayCircuit, 1);
             GridPane.setColumnIndex(overlayCircuit, 1);
@@ -159,8 +159,21 @@ public class View extends Application{
         }
     }
 
-    void openCircuit(){
-        
+    void openCircuit(double frameWidth, double frameHeight){
+        if(model.init(false)){
+            root.getChildren().remove(noCircuit);
+            GridPane.setRowIndex(overlayCircuit, 1);
+            GridPane.setColumnIndex(overlayCircuit, 1);
+            GridPane.setRowIndex(circuit, 1);
+            GridPane.setColumnIndex(circuit, 1);
+            root.getChildren().addAll(overlayCircuit, circuit);
+            circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics, 
+                frameWidth, model);
+            circuitControl.drawCircuitBackground(frameWidth, frameHeight);
+            circuitControl.mouseControl();
+
+            model.draw();
+        }   
     }
 
     public static Stage getStage(){
