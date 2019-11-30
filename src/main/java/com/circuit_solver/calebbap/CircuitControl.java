@@ -162,41 +162,46 @@ public class CircuitControl{
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
 
-        double angle = Math.atan( Math.abs(clickY - componentEndY) / Math.abs(clickX - componentEndX) );
+        if(View.getTool() != View.Tool.WIRE){
+            double angle = Math.atan( Math.abs(clickY - componentEndY) / Math.abs(clickX - componentEndX) );
 
-        Coordinate[] endCoordinates = drawComponentEnds(angle);
-        Coordinate lowerEnd = endCoordinates[0];
-        Coordinate higherEnd = endCoordinates[1];
+            Coordinate[] endCoordinates = drawComponentEnds(angle);
+            Coordinate lowerEnd = endCoordinates[0];
+            Coordinate higherEnd = endCoordinates[1];
 
-        if( ( (lowerEnd.startX < lowerEnd.endX) && (higherEnd.startX < higherEnd.endX) ) ||
-            ( (lowerEnd.startX == higherEnd.startX) && (lowerEnd.startY < lowerEnd.endY) 
-            && (higherEnd.startY < higherEnd.endY) ) ){
+            if( ( (lowerEnd.startX < lowerEnd.endX) && (higherEnd.startX < higherEnd.endX) ) ||
+                ( (lowerEnd.startX == higherEnd.startX) && (lowerEnd.startY < lowerEnd.endY) 
+                && (higherEnd.startY < higherEnd.endY) ) ){
 
-            circuitGraphics.strokeLine(lowerEnd.startX, lowerEnd.startY, lowerEnd.endX, lowerEnd.endY);
-            circuitGraphics.strokeLine(higherEnd.startX, higherEnd.startY, higherEnd.endX, higherEnd.endY);
+                circuitGraphics.strokeLine(lowerEnd.startX, lowerEnd.startY, lowerEnd.endX, lowerEnd.endY);
+                circuitGraphics.strokeLine(higherEnd.startX, higherEnd.startY, higherEnd.endX, higherEnd.endY);
 
-            // Make component using start and end coordinates of gap
-            switch(View.getTool()){
-                case WIRE:
-                    component = new Wire(new Coordinate(lowerEnd.endX, lowerEnd.endY, 
-                    higherEnd.startX, higherEnd.startY), angle);
-                    break;
-                case RESISTOR:
-                    break;
-                default:
-                    return;
+                // Make component using start and end coordinates of gap
+                switch(View.getTool()){
+                    case WIRE:
+                        component = new Wire(new Coordinate(lowerEnd.endX, lowerEnd.endY, 
+                        higherEnd.startX, higherEnd.startY), angle);
+                        break;
+                    case RESISTOR:
+                        break;
+                    default:
+                        return;
+                }
+                
+                Coordinate[] drawing = component.drawComponent();
+                for(int x = 0; x < drawing.length; x++){
+                    circuitGraphics.strokeLine(drawing[x].startX, drawing[x].startY, drawing[x].endX, drawing[x].endY);  
+                }
+                
+                Coordinate coordinate = new Coordinate(clickX, clickY, componentEndX, componentEndY);
+                model.write(coordinate);
+
             }
-            
-            Coordinate[] drawing = component.drawComponent();
-            for(int x = 0; x < drawing.length; x++){
-                circuitGraphics.strokeLine(drawing[x].startX, drawing[x].startY, drawing[x].endX, drawing[x].endY);  
-            }
-            
+        }else if(View.getTool() == View.Tool.WIRE){
+            circuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
             Coordinate coordinate = new Coordinate(clickX, clickY, componentEndX, componentEndY);
             model.write(coordinate);
-
         }
-        
     }
 
     Coordinate[] drawComponentEnds(double angle){
