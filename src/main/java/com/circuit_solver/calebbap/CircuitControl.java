@@ -153,8 +153,6 @@ public class CircuitControl{
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
 
-        //circuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
-
         // USE COORDINATE CLASS HERE AND IN REST OF THE CODE
         double componentRadius = 20;
 
@@ -238,11 +236,15 @@ public class CircuitControl{
             endHigherY = clickY;            
         }
 
-        circuitGraphics.strokeLine(startLowerX, startLowerY, endLowerX, endLowerY);
-        circuitGraphics.strokeLine(startHigherX, startHigherY, endHigherX, endHigherY);
-        
-        Coordinate coordinate = new Coordinate(clickX, clickY, componentEndX, componentEndY);
-        model.write(coordinate);
+        if( ( (startLowerX < endLowerX) && (startHigherX < endHigherX) ) ||
+            ( (startLowerX == endLowerX) && (startHigherX == endHigherX) && (startLowerY < endLowerY) 
+            && (startHigherY < endHigherY) ) ){ 
+                circuitGraphics.strokeLine(startLowerX, startLowerY, endLowerX, endLowerY);
+                circuitGraphics.strokeLine(startHigherX, startHigherY, endHigherX, endHigherY);
+                
+                Coordinate coordinate = new Coordinate(clickX, clickY, componentEndX, componentEndY);
+                model.write(coordinate);
+        }
     }
 
     void drawComponent(Coordinate coordinate){
