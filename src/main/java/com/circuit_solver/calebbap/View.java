@@ -1,15 +1,14 @@
 package com.circuit_solver.calebbap;
 
 import javafx.application.Application;
-
-import javafx.geometry.Pos;
-
-import javafx.event.EventHandler;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -17,17 +16,9 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Button;
-import javafx.scene.text.TextFlow;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.control.Hyperlink;
-
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCode;
-
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 public class View extends Application {
@@ -43,6 +34,13 @@ public class View extends Application {
     GridPane root;
     VBox noCircuit;
 
+    public enum Tool{
+        WIRE,
+        RESISTOR
+    }
+
+    private static Tool currentTool = Tool.WIRE;
+
     private Model model;
 
     private static Stage stage;
@@ -56,17 +54,17 @@ public class View extends Application {
         root.setId("root");
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("/primary.css").toExternalForm());
-        
+
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        frameOne();   
-    } 
+        frameOne();
+    }
 
-    public void frameOne(){
+    public void frameOne() {
         double frameHeight = root.getHeight();
-        double frameWidth =  root.getWidth();
-        
+        double frameWidth = root.getWidth();
+
         RowConstraints row0 = new RowConstraints();
         row0.setPercentHeight(4);
         RowConstraints row1 = new RowConstraints();
@@ -75,32 +73,38 @@ public class View extends Application {
         col0.setPercentWidth(15);
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(85);
-        
+
         root.getRowConstraints().add(row0);
         root.getColumnConstraints().add(col0);
         root.getRowConstraints().add(row1);
         root.getColumnConstraints().add(col1);
-        
-        
+
         MenuBar menuBar = new MenuBar();
 
         final Menu menuItem = new Menu("File");
-        
+
         MenuItem menuFileNew = new MenuItem("New Circuit");
-        menuFileNew.setOnAction(event -> { newCircuit(frameWidth, frameHeight); });
+        menuFileNew.setOnAction(event -> {
+            newCircuit(frameWidth, frameHeight);
+        });
 
         MenuItem menuFileOpen = new MenuItem("Open Circuit");
-        menuFileOpen.setOnAction(event -> { openCircuit(frameWidth, frameHeight); });
+        menuFileOpen.setOnAction(event -> {
+            openCircuit(frameWidth, frameHeight);
+        });
 
         menuItem.getItems().addAll(menuFileNew, menuFileOpen);
         menuBar.getMenus().add(menuItem);
-        
+
         GridPane tools = new GridPane();
         tools.setId("toolsGrid");
 
         Button wireButton = new Button("Wire");
         wireButton.setId("wire");
         tools.add(wireButton, 0, 0);
+        wireButton.setOnAction(a -> {
+            currentTool = Tool.WIRE;
+        });
 
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         circuitGraphics = circuit.getGraphicsContext2D();
@@ -111,27 +115,25 @@ public class View extends Application {
         model = new Model();
 
         Hyperlink newLink = new Hyperlink("new");
-        newLink.setOnAction(new EventHandler<ActionEvent>(){
+        newLink.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
                 newCircuit(frameWidth, frameHeight);
             }
-            
+
         });
 
         Hyperlink openLink = new Hyperlink("open");
-        openLink.setOnAction(new EventHandler<ActionEvent>(){
+        openLink.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
                 openCircuit(frameWidth, frameHeight);
             }
-            
+
         });
 
         noCircuit = new VBox();
         noCircuit.setAlignment(Pos.CENTER);
-        TextFlow noCircuitText = new TextFlow(
-            new Text("Create a"), newLink, new Text("circuit or"), openLink, 
-            new Text("an existing circuit to continue.")
-        );
+        TextFlow noCircuitText = new TextFlow(new Text("Create a"), newLink, new Text("circuit or"), openLink,
+                new Text("an existing circuit to continue."));
         noCircuitText.setId("noCircuitText");
         noCircuitText.setTextAlignment(TextAlignment.CENTER);
         noCircuit.getChildren().add(noCircuitText);
@@ -142,14 +144,14 @@ public class View extends Application {
         GridPane.setRowIndex(tools, 1);
         GridPane.setColumnIndex(tools, 0);
         GridPane.setRowIndex(noCircuit, 1);
-        GridPane.setColumnIndex(noCircuit, 1);  
-        root.getChildren().addAll(menuBar, tools, noCircuit);   
+        GridPane.setColumnIndex(noCircuit, 1);
+        root.getChildren().addAll(menuBar, tools, noCircuit);
     }
 
-    void initCircuit(double frameWidth, double frameHeight){
+    void initCircuit(double frameWidth, double frameHeight) {
         Boolean firstCircuit = !(root.getChildren().contains(circuit));
-        
-        if(firstCircuit){
+
+        if (firstCircuit) {
             root.getChildren().remove(noCircuit);
             GridPane.setRowIndex(overlayCircuit, 1);
             GridPane.setColumnIndex(overlayCircuit, 1);
@@ -157,35 +159,39 @@ public class View extends Application {
             GridPane.setColumnIndex(circuit, 1);
             root.getChildren().addAll(overlayCircuit, circuit);
 
-            circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics, 
-                frameWidth, model);
+            circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics,
+                    frameWidth, model);
             circuitControl.drawCircuitBackground(frameWidth, frameHeight);
             circuitControl.mouseControl();
-        }else{
+        } else {
             circuitGraphics.clearRect(0, 0, circuit.getWidth(), circuit.getHeight());
             circuitControl.drawCircuitBackground(frameWidth, frameHeight);
         }
     }
 
-    void newCircuit(double frameWidth, double frameHeight){
-        if(model.init(true)){
+    void newCircuit(double frameWidth, double frameHeight) {
+        if (model.init(true)) {
             initCircuit(frameWidth, frameHeight);
         }
     }
 
-    void openCircuit(double frameWidth, double frameHeight){
-        if(model.init(false)){
+    void openCircuit(double frameWidth, double frameHeight) {
+        if (model.init(false)) {
             initCircuit(frameWidth, frameHeight);
             model.drawFromFile();
-        }   
+        }
     }
 
-    public static Stage getStage(){
+    public static Stage getStage() {
         return stage;
     }
 
-    public static CircuitControl getCircuitControl(){
+    public static CircuitControl getCircuitControl() {
         return circuitControl;
+    }
+
+    public static Tool getTool() {
+        return currentTool;
     }
 
     public void stop(){

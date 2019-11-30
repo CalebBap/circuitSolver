@@ -1,5 +1,7 @@
 package com.circuit_solver.calebbap;
 
+import com.circuit_solver.calebbap.components.Wire;
+
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.Canvas;
@@ -60,7 +62,7 @@ public class CircuitControl{
 
         final EventHandler<MouseEvent> mousePressed = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if( /*(component != null) &&*/ (withinBounds(event.getX(), event.getY())) ){
+                if( withinBounds( event.getX(), event.getY() ) ){
                     double[] relativePosition = relativeMousePosition(event.getX(), event.getY());
                     clickX = relativePosition[0];
                     clickY = relativePosition[1]; 
@@ -70,7 +72,7 @@ public class CircuitControl{
 
         final EventHandler<MouseEvent> dragged = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if( /*(component != null) &&*/ (withinBounds(event.getX(), event.getY())) ){
+                if( withinBounds(event.getX(), event.getY() ) ){
                     drawOverlayComponent(event.getX(), event.getY());
                 }
             }
@@ -78,9 +80,7 @@ public class CircuitControl{
 
         final EventHandler<MouseEvent> mouseReleased = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                //if(component != null){
-                    drawComponent();
-                //}
+                drawComponent();
             }
         };
 
@@ -162,7 +162,9 @@ public class CircuitControl{
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
 
-        Coordinate[] endCoordinates = drawComponentEnds();
+        double angle = Math.atan( Math.abs(clickY - componentEndY) / Math.abs(clickX - componentEndX) );
+
+        Coordinate[] endCoordinates = drawComponentEnds(angle);
         Coordinate lowerEnd = endCoordinates[0];
         Coordinate higherEnd = endCoordinates[1];
 
@@ -172,6 +174,23 @@ public class CircuitControl{
 
             circuitGraphics.strokeLine(lowerEnd.startX, lowerEnd.startY, lowerEnd.endX, lowerEnd.endY);
             circuitGraphics.strokeLine(higherEnd.startX, higherEnd.startY, higherEnd.endX, higherEnd.endY);
+
+            // Make component using start and end coordinates of gap
+            switch(View.getTool()){
+                case WIRE:
+                    component = new Wire(new Coordinate(lowerEnd.endX, lowerEnd.endY, 
+                    higherEnd.startX, higherEnd.startY), angle);
+                    break;
+                case RESISTOR:
+                    break;
+                default:
+                    return;
+            }
+            
+            Coordinate[] drawing = component.drawComponent();
+            for(int x = 0; x < drawing.length; x++){
+                circuitGraphics.strokeLine(drawing[x].startX, drawing[x].startY, drawing[x].endX, drawing[x].endY);  
+            }
             
             Coordinate coordinate = new Coordinate(clickX, clickY, componentEndX, componentEndY);
             model.write(coordinate);
@@ -180,13 +199,12 @@ public class CircuitControl{
         
     }
 
-    Coordinate[] drawComponentEnds(){
+    Coordinate[] drawComponentEnds(double angle){
         Coordinate lowerEnd = new Coordinate();
         Coordinate higherEnd = new Coordinate();
 
         double middleX = Math.abs(clickX + componentEndX) / 2;
         double middleY = Math.abs(clickY + componentEndY) / 2;
-        double angle = Math.atan( Math.abs(clickY - componentEndY) / Math.abs(clickX - componentEndX) );
         
         if(clickX == componentEndX){
             lowerEnd.startX = lowerEnd.endX = higherEnd.startX = higherEnd.endX = clickX;
