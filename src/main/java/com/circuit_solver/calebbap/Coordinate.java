@@ -6,6 +6,8 @@ public class Coordinate{
     double endX;
     double endY;
 
+    Coordinate(){ }
+
     Coordinate(double newStartX, double newStartY, double newEndX, double newEndY){
         startX = newStartX;
         startY = newStartY;
