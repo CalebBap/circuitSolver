@@ -31,12 +31,11 @@ public class View extends Application {
     private GraphicsContext overlayCircuitGraphics;
     CircuitControl overlayCircuitControl;
 
-    GridPane root;
+    static GridPane root;
     VBox noCircuit;
 
-    public enum Tool{
-        WIRE,
-        RESISTOR
+    public enum Tool {
+        WIRE, RESISTOR
     }
 
     private static Tool currentTool = Tool.WIRE;
@@ -85,12 +84,12 @@ public class View extends Application {
 
         MenuItem menuFileNew = new MenuItem("New Circuit");
         menuFileNew.setOnAction(event -> {
-            newCircuit(frameWidth, frameHeight);
+            newCircuit();
         });
 
         MenuItem menuFileOpen = new MenuItem("Open Circuit");
         menuFileOpen.setOnAction(event -> {
-            openCircuit(frameWidth, frameHeight);
+            openCircuit();
         });
 
         menuItem.getItems().addAll(menuFileNew, menuFileOpen);
@@ -117,7 +116,7 @@ public class View extends Application {
         Hyperlink newLink = new Hyperlink("new");
         newLink.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                newCircuit(frameWidth, frameHeight);
+                newCircuit();
             }
 
         });
@@ -125,7 +124,7 @@ public class View extends Application {
         Hyperlink openLink = new Hyperlink("open");
         openLink.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                openCircuit(frameWidth, frameHeight);
+                openCircuit();
             }
 
         });
@@ -148,7 +147,7 @@ public class View extends Application {
         root.getChildren().addAll(menuBar, tools, noCircuit);
     }
 
-    void initCircuit(double frameWidth, double frameHeight) {
+    void initCircuit() {
         Boolean firstCircuit = !(root.getChildren().contains(circuit));
 
         if (firstCircuit) {
@@ -160,30 +159,34 @@ public class View extends Application {
             root.getChildren().addAll(overlayCircuit, circuit);
 
             circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics,
-                    frameWidth, model);
-            circuitControl.drawCircuitBackground(frameWidth, frameHeight);
+                    model);
+            circuitControl.drawCircuitBackground();
             circuitControl.mouseControl();
         } else {
             circuitGraphics.clearRect(0, 0, circuit.getWidth(), circuit.getHeight());
-            circuitControl.drawCircuitBackground(frameWidth, frameHeight);
+            circuitControl.drawCircuitBackground();
         }
     }
 
-    void newCircuit(double frameWidth, double frameHeight) {
+    void newCircuit() {
         if (model.init(true)) {
-            initCircuit(frameWidth, frameHeight);
+            initCircuit();
         }
     }
 
-    void openCircuit(double frameWidth, double frameHeight) {
+    void openCircuit() {
         if (model.init(false)) {
-            initCircuit(frameWidth, frameHeight);
+            initCircuit();
             model.drawFromFile();
         }
     }
 
     public static Stage getStage() {
         return stage;
+    }
+
+    public static GridPane getRoot() {
+        return root;
     }
 
     public static CircuitControl getCircuitControl() {

@@ -36,12 +36,12 @@ public class CircuitControl{
 
 
     CircuitControl(Canvas newCircuit, GraphicsContext newCircuitGraphics, Canvas newOverlayCircuit, 
-        GraphicsContext newOverlayCircuitGraphics, double frameWidth, Model newModel){
+        GraphicsContext newOverlayCircuitGraphics, Model newModel){
             circuit = newCircuit;
             circuitGraphics = newCircuitGraphics;
             overlayCircuit = newOverlayCircuit;
             overlayCircuitGraphics = newOverlayCircuitGraphics;
-            dotSpacing  = frameWidth * 0.01;
+            dotSpacing  = View.getRoot().getWidth() * 0.01;
             model = newModel;
     }
 
@@ -91,9 +91,11 @@ public class CircuitControl{
         circuit.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleased);
     }
 
-    void drawCircuitBackground(double width, double height){
+    void drawCircuitBackground(){
         int numXDots = 0;
         int numYDots = 0;
+        double width = View.getRoot().getWidth();
+        double height = View.getRoot().getHeight();
 
         circuitGraphics.setFill(Color.BLUE);
         for(double x = dotSpacing; x <= ((width * 0.85) - dotSpacing); x+=dotSpacing){
