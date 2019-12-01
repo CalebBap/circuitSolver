@@ -16,6 +16,8 @@ public class CircuitControl{
     private GraphicsContext circuitGraphics;
     private Canvas overlayCircuit;
     private GraphicsContext overlayCircuitGraphics;
+    private Canvas circuitBackground;
+    private GraphicsContext circuitBackgroundGraphics;
     
     private int[] numDots = {0, 0};
 
@@ -36,11 +38,14 @@ public class CircuitControl{
 
 
     CircuitControl(Canvas newCircuit, GraphicsContext newCircuitGraphics, Canvas newOverlayCircuit, 
-        GraphicsContext newOverlayCircuitGraphics, double frameWidth, Model newModel){
+        GraphicsContext newOverlayCircuitGraphics, Canvas newCircuitBackground, GraphicsContext newCircuitBackgroundGraphics, 
+        double frameWidth, Model newModel){
             circuit = newCircuit;
             circuitGraphics = newCircuitGraphics;
             overlayCircuit = newOverlayCircuit;
             overlayCircuitGraphics = newOverlayCircuitGraphics;
+            circuitBackground = newCircuitBackground;
+            circuitBackgroundGraphics = newCircuitBackgroundGraphics;
             dotSpacing  = frameWidth * 0.01;
             model = newModel;
     }
@@ -95,10 +100,10 @@ public class CircuitControl{
         int numXDots = 0;
         int numYDots = 0;
 
-        circuitGraphics.setFill(Color.BLUE);
+        circuitBackgroundGraphics.setFill(Color.BLUE);
         for(double x = dotSpacing; x <= ((width * 0.85) - dotSpacing); x+=dotSpacing){
             for(double y = dotSpacing; y <= ((height * 0.95) - dotSpacing); y+=dotSpacing){
-                circuitGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
+                circuitBackgroundGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
                 numYDots++;
             }
             numXDots++;

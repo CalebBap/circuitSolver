@@ -21,6 +21,8 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
+import javafx.beans.value.*;
+
 public class View extends Application {
 
     private Canvas circuit;
@@ -30,6 +32,10 @@ public class View extends Application {
     private Canvas overlayCircuit;
     private GraphicsContext overlayCircuitGraphics;
     CircuitControl overlayCircuitControl;
+
+    private Canvas circuitBackground;
+    private GraphicsContext circuitBackgroundGraphics;
+    CircuitControl circuitBackgroundControl;
 
     GridPane root;
     VBox noCircuit;
@@ -106,6 +112,9 @@ public class View extends Application {
             currentTool = Tool.WIRE;
         });
 
+        circuitBackground = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
+        circuitBackgroundGraphics = circuitBackground.getGraphicsContext2D();
+
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         circuitGraphics = circuit.getGraphicsContext2D();
 
@@ -146,6 +155,17 @@ public class View extends Application {
         GridPane.setRowIndex(noCircuit, 1);
         GridPane.setColumnIndex(noCircuit, 1);
         root.getChildren().addAll(menuBar, tools, noCircuit);
+
+        ChangeListener<Number> windowResizeListener = (observable, oldValue, newValue) ->
+            windowResized();
+        stage.widthProperty().addListener(windowResizeListener);
+        stage.heightProperty().addListener(windowResizeListener); 
+    }
+
+    void windowResized(){
+        if(root.getChildren().contains(circuit)){
+            circuitControl.drawCircuitBackground(root.getWidth(), root.getHeight());
+        }
     }
 
     void initCircuit(double frameWidth, double frameHeight) {
@@ -157,10 +177,12 @@ public class View extends Application {
             GridPane.setColumnIndex(overlayCircuit, 1);
             GridPane.setRowIndex(circuit, 1);
             GridPane.setColumnIndex(circuit, 1);
-            root.getChildren().addAll(overlayCircuit, circuit);
+            GridPane.setRowIndex(circuitBackground, 1);
+            GridPane.setColumnIndex(circuitBackground, 1);
+            root.getChildren().addAll(overlayCircuit, circuitBackground, circuit);
 
             circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics,
-                    frameWidth, model);
+                    circuitBackground, circuitBackgroundGraphics, frameWidth, model);
             circuitControl.drawCircuitBackground(frameWidth, frameHeight);
             circuitControl.mouseControl();
         } else {
