@@ -13,3 +13,11 @@
 #toolsGrid{
     -fx-background-color: #EEEEEE;
 }
+
+#circuit{
+    -fx-background-color: pink;
+}
+
+#overlay_circuit{
+    -fx-background-color: salmon;
+}

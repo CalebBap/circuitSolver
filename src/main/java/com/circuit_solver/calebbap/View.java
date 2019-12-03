@@ -21,11 +21,17 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
+import javafx.beans.value.*;
+import javafx.application.Platform;
+
 public class View extends Application {
+
+    private double currentWidth;
+    private double currentHeight;
 
     private Canvas circuit;
     private GraphicsContext circuitGraphics;
-    static CircuitControl circuitControl;
+    private static CircuitControl circuitControl;
 
     private Canvas overlayCircuit;
     private GraphicsContext overlayCircuitGraphics;
@@ -42,7 +48,7 @@ public class View extends Application {
 
     private Model model;
 
-    private static Stage stage;
+    private static Stage stage; 
 
     public void start(Stage primaryStage) {
         stage = primaryStage;
@@ -63,6 +69,8 @@ public class View extends Application {
     public void frameOne() {
         double frameHeight = root.getHeight();
         double frameWidth = root.getWidth();
+        currentHeight = frameHeight;
+        currentWidth = frameWidth;
 
         RowConstraints row0 = new RowConstraints();
         row0.setPercentHeight(4);
@@ -145,6 +153,21 @@ public class View extends Application {
         GridPane.setRowIndex(noCircuit, 1);
         GridPane.setColumnIndex(noCircuit, 1);
         root.getChildren().addAll(menuBar, tools, noCircuit);
+
+        ChangeListener<Number> windowResizeListener = (observable, oldValue, newValue) -> 
+            windowResized();
+        root.widthProperty().addListener(windowResizeListener);
+        root.heightProperty().addListener(windowResizeListener);
+    }
+
+    void windowResized() {
+        if (root.getChildren().contains(circuit)){
+            circuitControl.resizeCircuit();
+            circuitControl.clearCircuit();
+            circuitControl.drawCircuitBackground();
+
+            System.out.println("");
+        }
     }
 
     void initCircuit() {
