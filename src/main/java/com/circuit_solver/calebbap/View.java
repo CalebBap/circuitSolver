@@ -1,6 +1,7 @@
 package com.circuit_solver.calebbap;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -21,17 +22,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
-import javafx.beans.value.*;
-<<<<<<< HEAD
-=======
-import javafx.application.Platform;
->>>>>>> resize_attempt_two
-
 public class View extends Application {
-
-    private double currentWidth;
-    private double currentHeight;
-
     private Canvas circuit;
     private GraphicsContext circuitGraphics;
     private static CircuitControl circuitControl;
@@ -40,15 +31,7 @@ public class View extends Application {
     private GraphicsContext overlayCircuitGraphics;
     CircuitControl overlayCircuitControl;
 
-<<<<<<< HEAD
-    private Canvas circuitBackground;
-    private GraphicsContext circuitBackgroundGraphics;
-    CircuitControl circuitBackgroundControl;
-
-    GridPane root;
-=======
     static GridPane root;
->>>>>>> resize_attempt_two
     VBox noCircuit;
 
     public enum Tool {
@@ -80,8 +63,6 @@ public class View extends Application {
     public void frameOne() {
         double frameHeight = root.getHeight();
         double frameWidth = root.getWidth();
-        currentHeight = frameHeight;
-        currentWidth = frameWidth;
 
         RowConstraints row0 = new RowConstraints();
         row0.setPercentHeight(4);
@@ -124,9 +105,6 @@ public class View extends Application {
             currentTool = Tool.WIRE;
         });
 
-        circuitBackground = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
-        circuitBackgroundGraphics = circuitBackground.getGraphicsContext2D();
-
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         circuitGraphics = circuit.getGraphicsContext2D();
 
@@ -168,23 +146,10 @@ public class View extends Application {
         GridPane.setColumnIndex(noCircuit, 1);
         root.getChildren().addAll(menuBar, tools, noCircuit);
 
-<<<<<<< HEAD
-        ChangeListener<Number> windowResizeListener = (observable, oldValue, newValue) ->
-            windowResized();
-        stage.widthProperty().addListener(windowResizeListener);
-        stage.heightProperty().addListener(windowResizeListener); 
-    }
-
-    void windowResized(){
-        if(root.getChildren().contains(circuit)){
-            circuitControl.drawCircuitBackground(root.getWidth(), root.getHeight());
-        }
-=======
         ChangeListener<Number> windowResizeListener = (observable, oldValue, newValue) -> 
             windowResized();
         root.widthProperty().addListener(windowResizeListener);
         root.heightProperty().addListener(windowResizeListener);
->>>>>>> resize_attempt_two
     }
 
     void windowResized() {
@@ -206,18 +171,11 @@ public class View extends Application {
             GridPane.setColumnIndex(overlayCircuit, 1);
             GridPane.setRowIndex(circuit, 1);
             GridPane.setColumnIndex(circuit, 1);
-            GridPane.setRowIndex(circuitBackground, 1);
-            GridPane.setColumnIndex(circuitBackground, 1);
-            root.getChildren().addAll(overlayCircuit, circuitBackground, circuit);
+            root.getChildren().addAll(overlayCircuit, circuit);
 
             circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics,
-<<<<<<< HEAD
-                    circuitBackground, circuitBackgroundGraphics, frameWidth, model);
-            circuitControl.drawCircuitBackground(frameWidth, frameHeight);
-=======
                     model);
             circuitControl.drawCircuitBackground();
->>>>>>> resize_attempt_two
             circuitControl.mouseControl();
         } else {
             circuitGraphics.clearRect(0, 0, circuit.getWidth(), circuit.getHeight());
