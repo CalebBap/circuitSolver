@@ -16,10 +16,15 @@ public class CircuitControl{
     private GraphicsContext circuitGraphics;
     private Canvas overlayCircuit;
     private GraphicsContext overlayCircuitGraphics;
+<<<<<<< HEAD
     private Canvas circuitBackground;
     private GraphicsContext circuitBackgroundGraphics;
     
     private int[] numDots = {0, 0};
+=======
+
+    private int[] numDots = { 0, 0 };
+>>>>>>> resize_attempt_two
 
     private double dotSpacing = 0;
     private double dotXPosition = 0;
@@ -36,6 +41,7 @@ public class CircuitControl{
     private Component component = null;
     double componentRadius = 20;
 
+<<<<<<< HEAD
 
     CircuitControl(Canvas newCircuit, GraphicsContext newCircuitGraphics, Canvas newOverlayCircuit, 
         GraphicsContext newOverlayCircuitGraphics, Canvas newCircuitBackground, GraphicsContext newCircuitBackgroundGraphics, 
@@ -48,17 +54,26 @@ public class CircuitControl{
             circuitBackgroundGraphics = newCircuitBackgroundGraphics;
             dotSpacing  = frameWidth * 0.01;
             model = newModel;
+=======
+    CircuitControl(Canvas newCircuit, GraphicsContext newCircuitGraphics, Canvas newOverlayCircuit,
+            GraphicsContext newOverlayCircuitGraphics, Model newModel) {
+        circuit = newCircuit;
+        circuitGraphics = newCircuitGraphics;
+        overlayCircuit = newOverlayCircuit;
+        overlayCircuitGraphics = newOverlayCircuitGraphics;
+        model = newModel;
+>>>>>>> resize_attempt_two
     }
 
-    void mouseControl(){
+    void mouseControl() {
         final EventHandler<MouseEvent> mouseMoved = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if(dotSpacing != 0){
+                if (dotSpacing != 0) {
                     circuitHover(event.getX(), event.getY());
                 }
             }
         };
-        
+
         final EventHandler<MouseEvent> mouseExited = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 clearOverlay();
@@ -67,17 +82,17 @@ public class CircuitControl{
 
         final EventHandler<MouseEvent> mousePressed = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if( withinBounds( event.getX(), event.getY() ) ){
+                if (withinBounds(event.getX(), event.getY())) {
                     double[] relativePosition = relativeMousePosition(event.getX(), event.getY());
                     clickX = relativePosition[0];
-                    clickY = relativePosition[1]; 
+                    clickY = relativePosition[1];
                 }
             }
         };
 
         final EventHandler<MouseEvent> dragged = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if( withinBounds(event.getX(), event.getY() ) ){
+                if (withinBounds(event.getX(), event.getY())) {
                     drawOverlayComponent(event.getX(), event.getY());
                 }
             }
@@ -96,14 +111,25 @@ public class CircuitControl{
         circuit.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleased);
     }
 
-    void drawCircuitBackground(double width, double height){
+    void drawCircuitBackground() {
         int numXDots = 0;
         int numYDots = 0;
+<<<<<<< HEAD
 
         circuitBackgroundGraphics.setFill(Color.BLUE);
         for(double x = dotSpacing; x <= ((width * 0.85) - dotSpacing); x+=dotSpacing){
             for(double y = dotSpacing; y <= ((height * 0.95) - dotSpacing); y+=dotSpacing){
                 circuitBackgroundGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
+=======
+        double height = View.getRoot().getHeight();
+        double width = View.getRoot().getWidth();
+        dotSpacing = (width / height) * 8;
+        
+        circuitGraphics.setFill(Color.BLUE);
+        for (double x = dotSpacing; x <= ((width * 0.85) - dotSpacing); x += dotSpacing) {
+            for (double y = dotSpacing; y <= ((height * 0.95) - dotSpacing); y += dotSpacing) {
+                circuitGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
+>>>>>>> resize_attempt_two
                 numYDots++;
             }
             numXDots++;
@@ -115,7 +141,7 @@ public class CircuitControl{
         numDots[1] = numYDots;
     }
 
-    void circuitHover(double x, double y){
+    void circuitHover(double x, double y) {
         clearOverlay();
 
         double[] relativePosition = relativeMousePosition(x, y);
@@ -127,8 +153,27 @@ public class CircuitControl{
         overlayCircuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
     }
 
-    void clearOverlay(){
+    void clearOverlay() {
         overlayCircuitGraphics.clearRect(0, 0, overlayCircuit.getWidth(), overlayCircuit.getHeight());
+    }
+
+    public void clearCircuit() {
+        circuitGraphics.clearRect(0, 0, circuit.getWidth(), circuit.getHeight());
+    }
+
+    public void resizeCircuit() {
+        double height = View.getRoot().getHeight();
+        double width = View.getRoot().getWidth();
+        circuit.setHeight(height * 0.95);
+        circuit.setWidth(width * 0.85);
+        overlayCircuit.setHeight(height * 0.95);
+        overlayCircuit.setWidth(width * 0.85);
+        /*double width = View.getStage().getWidth() * 0.85; 
+        double height = View.getStage().getHeight() * 0.95;
+        circuit.setHeight(height);
+        circuit.setWidth(width);
+        overlayCircuit.setHeight(height);
+        overlayCircuit.setWidth(width);*/
     }
 
     double[] relativeMousePosition(double x, double y){

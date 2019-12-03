@@ -22,34 +22,44 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
 import javafx.beans.value.*;
+<<<<<<< HEAD
+=======
+import javafx.application.Platform;
+>>>>>>> resize_attempt_two
 
 public class View extends Application {
 
+    private double currentWidth;
+    private double currentHeight;
+
     private Canvas circuit;
     private GraphicsContext circuitGraphics;
-    static CircuitControl circuitControl;
+    private static CircuitControl circuitControl;
 
     private Canvas overlayCircuit;
     private GraphicsContext overlayCircuitGraphics;
     CircuitControl overlayCircuitControl;
 
+<<<<<<< HEAD
     private Canvas circuitBackground;
     private GraphicsContext circuitBackgroundGraphics;
     CircuitControl circuitBackgroundControl;
 
     GridPane root;
+=======
+    static GridPane root;
+>>>>>>> resize_attempt_two
     VBox noCircuit;
 
-    public enum Tool{
-        WIRE,
-        RESISTOR
+    public enum Tool {
+        WIRE, RESISTOR
     }
 
     private static Tool currentTool = Tool.WIRE;
 
     private Model model;
 
-    private static Stage stage;
+    private static Stage stage; 
 
     public void start(Stage primaryStage) {
         stage = primaryStage;
@@ -70,6 +80,8 @@ public class View extends Application {
     public void frameOne() {
         double frameHeight = root.getHeight();
         double frameWidth = root.getWidth();
+        currentHeight = frameHeight;
+        currentWidth = frameWidth;
 
         RowConstraints row0 = new RowConstraints();
         row0.setPercentHeight(4);
@@ -91,12 +103,12 @@ public class View extends Application {
 
         MenuItem menuFileNew = new MenuItem("New Circuit");
         menuFileNew.setOnAction(event -> {
-            newCircuit(frameWidth, frameHeight);
+            newCircuit();
         });
 
         MenuItem menuFileOpen = new MenuItem("Open Circuit");
         menuFileOpen.setOnAction(event -> {
-            openCircuit(frameWidth, frameHeight);
+            openCircuit();
         });
 
         menuItem.getItems().addAll(menuFileNew, menuFileOpen);
@@ -126,7 +138,7 @@ public class View extends Application {
         Hyperlink newLink = new Hyperlink("new");
         newLink.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                newCircuit(frameWidth, frameHeight);
+                newCircuit();
             }
 
         });
@@ -134,7 +146,7 @@ public class View extends Application {
         Hyperlink openLink = new Hyperlink("open");
         openLink.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                openCircuit(frameWidth, frameHeight);
+                openCircuit();
             }
 
         });
@@ -156,6 +168,7 @@ public class View extends Application {
         GridPane.setColumnIndex(noCircuit, 1);
         root.getChildren().addAll(menuBar, tools, noCircuit);
 
+<<<<<<< HEAD
         ChangeListener<Number> windowResizeListener = (observable, oldValue, newValue) ->
             windowResized();
         stage.widthProperty().addListener(windowResizeListener);
@@ -166,9 +179,25 @@ public class View extends Application {
         if(root.getChildren().contains(circuit)){
             circuitControl.drawCircuitBackground(root.getWidth(), root.getHeight());
         }
+=======
+        ChangeListener<Number> windowResizeListener = (observable, oldValue, newValue) -> 
+            windowResized();
+        root.widthProperty().addListener(windowResizeListener);
+        root.heightProperty().addListener(windowResizeListener);
+>>>>>>> resize_attempt_two
     }
 
-    void initCircuit(double frameWidth, double frameHeight) {
+    void windowResized() {
+        if (root.getChildren().contains(circuit)){
+            circuitControl.resizeCircuit();
+            circuitControl.clearCircuit();
+            circuitControl.drawCircuitBackground();
+
+            System.out.println("");
+        }
+    }
+
+    void initCircuit() {
         Boolean firstCircuit = !(root.getChildren().contains(circuit));
 
         if (firstCircuit) {
@@ -182,30 +211,39 @@ public class View extends Application {
             root.getChildren().addAll(overlayCircuit, circuitBackground, circuit);
 
             circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics,
+<<<<<<< HEAD
                     circuitBackground, circuitBackgroundGraphics, frameWidth, model);
             circuitControl.drawCircuitBackground(frameWidth, frameHeight);
+=======
+                    model);
+            circuitControl.drawCircuitBackground();
+>>>>>>> resize_attempt_two
             circuitControl.mouseControl();
         } else {
             circuitGraphics.clearRect(0, 0, circuit.getWidth(), circuit.getHeight());
-            circuitControl.drawCircuitBackground(frameWidth, frameHeight);
+            circuitControl.drawCircuitBackground();
         }
     }
 
-    void newCircuit(double frameWidth, double frameHeight) {
+    void newCircuit() {
         if (model.init(true)) {
-            initCircuit(frameWidth, frameHeight);
+            initCircuit();
         }
     }
 
-    void openCircuit(double frameWidth, double frameHeight) {
+    void openCircuit() {
         if (model.init(false)) {
-            initCircuit(frameWidth, frameHeight);
+            initCircuit();
             model.drawFromFile();
         }
     }
 
     public static Stage getStage() {
         return stage;
+    }
+
+    public static GridPane getRoot() {
+        return root;
     }
 
     public static CircuitControl getCircuitControl() {
