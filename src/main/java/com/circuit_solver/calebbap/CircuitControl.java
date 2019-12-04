@@ -1,7 +1,6 @@
 package com.circuit_solver.calebbap;
 
-import com.circuit_solver.calebbap.View.Tool;
-import com.circuit_solver.calebbap.components.Wire;
+import com.circuit_solver.calebbap.components.*;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;

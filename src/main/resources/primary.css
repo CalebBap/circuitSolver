@@ -14,10 +14,12 @@
     -fx-background-color: #EEEEEE;
 }
 
-#circuit{
+/*
+#circuit_scroll_pane{
     -fx-background-color: pink;
 }
 
-#overlay_circuit{
-    -fx-background-color: salmon;
+#circuit_pane{
+    -fx-background-color: yellow;
 }
+*/
