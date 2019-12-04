@@ -47,12 +47,6 @@ public class Model{
                 return false;
             }
         }
-
-        try{
-            reader = new Scanner(file);
-        }catch(FileNotFoundException e){
-            return false;
-        }
         
         View.getStage().setTitle("Circuit Solver - " + file.getName());
 
@@ -71,6 +65,12 @@ public class Model{
         ArrayList<Coordinate> valueList = new ArrayList<Coordinate>();
 
         int index = 0;
+
+        try{
+            reader = new Scanner(file);
+        }catch(FileNotFoundException e){
+            return valueList;
+        }
 
         while(reader.hasNext()){
             values[index] = Double.parseDouble(reader.next());

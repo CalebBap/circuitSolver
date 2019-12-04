@@ -1,5 +1,7 @@
 package com.circuit_solver.calebbap;
 
+import java.util.ArrayList;
+
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
@@ -157,8 +159,7 @@ public class View extends Application {
             circuitControl.resizeCircuit();
             circuitControl.clearCircuit();
             circuitControl.drawCircuitBackground();
-
-            System.out.println("");
+            model.drawFromFile();
         }
     }
 

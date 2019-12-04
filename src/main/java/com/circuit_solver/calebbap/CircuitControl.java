@@ -61,7 +61,7 @@ public class CircuitControl{
         final EventHandler<MouseEvent> mousePressed = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 if (withinBounds(event.getX(), event.getY())) {
-                    double[] relativePosition = relativeMousePosition(event.getX(), event.getY());
+                    double[] relativePosition = relativePosition(event.getX(), event.getY());
                     clickX = relativePosition[0];
                     clickY = relativePosition[1];
                 }
@@ -114,7 +114,7 @@ public class CircuitControl{
     void circuitHover(double x, double y) {
         clearOverlay();
 
-        double[] relativePosition = relativeMousePosition(x, y);
+        double[] relativePosition = relativePosition(x, y);
         dotXPosition = relativePosition[0];
         dotYPosition = relativePosition[1];
 
@@ -140,7 +140,7 @@ public class CircuitControl{
         overlayCircuit.setWidth(width * 0.85);
     }
 
-    double[] relativeMousePosition(double x, double y){
+    double[] relativePosition(double x, double y){
         Bounds canvasBounds = circuit.getBoundsInParent();
         double relativeXPostion = x / canvasBounds.getWidth();
         double relativeYPostion = y / canvasBounds.getHeight();
@@ -153,7 +153,7 @@ public class CircuitControl{
     }
 
     void drawOverlayComponent(double x, double y){
-        double[] relativePosition = relativeMousePosition(x, y);
+        double[] relativePosition = relativePosition(x, y);
         componentEndX = relativePosition[0];
         componentEndY = relativePosition[1];
         clearOverlay();
@@ -167,7 +167,12 @@ public class CircuitControl{
     void drawComponent(Coordinate coordinate){
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
-        circuitGraphics.strokeLine(coordinate.startX, coordinate.startY, coordinate.endX, coordinate.endY);
+        
+        double[] startPoint = relativePosition(coordinate.startX * circuit.getWidth(), coordinate.startY * circuit.getHeight());
+        double[] endPoint = relativePosition(coordinate.endX * circuit.getWidth(), coordinate.endY * circuit.getHeight());
+
+        circuitGraphics.strokeLine(startPoint[0], startPoint[1], 
+            endPoint[0], endPoint[1]);
     }
 
     void drawComponent(){
@@ -207,13 +212,15 @@ public class CircuitControl{
                     circuitGraphics.strokeLine(drawing[x].startX, drawing[x].startY, drawing[x].endX, drawing[x].endY);  
                 }
                 
-                Coordinate coordinate = new Coordinate(clickX, clickY, componentEndX, componentEndY);
+                Coordinate coordinate = new Coordinate(clickX / circuit.getWidth(), clickY / circuit.getHeight(), 
+                    componentEndX / circuit.getWidth(), componentEndY / circuit.getHeight());
                 model.write(coordinate);
 
             }
         }else if(View.getTool() == View.Tool.WIRE){
             circuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
-            Coordinate coordinate = new Coordinate(clickX, clickY, componentEndX, componentEndY);
+            Coordinate coordinate = new Coordinate(clickX / circuit.getWidth(), clickY / circuit.getHeight(), 
+                    componentEndX / circuit.getWidth(), componentEndY / circuit.getHeight());
             model.write(coordinate);
         }
     }
@@ -301,5 +308,9 @@ public class CircuitControl{
         }
 
         return true;
+    }
+
+    public Canvas getCircuit(){
+        return circuit;
     }
 }
