@@ -1,7 +1,5 @@
 package com.circuit_solver.calebbap;
 
-import java.util.ArrayList;
-
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
@@ -105,6 +103,24 @@ public class View extends Application {
         tools.add(wireButton, 0, 0);
         wireButton.setOnAction(a -> {
             currentTool = Tool.WIRE;
+        });
+
+        Button zoomIn = new Button("Zoom In");
+        tools.add(zoomIn, 1, 0);
+        zoomIn.setOnAction(a -> {
+            if( (circuitControl.getScale() < 5) && (root.getChildren().contains(circuit)) ){
+                circuitControl.setScale(1.2);
+                circuitControl.zoom();
+            }
+        });
+
+        Button zoomOut = new Button("Zoom Out");
+        tools.add(zoomOut, 1, 1);
+        zoomOut.setOnAction(a -> {
+            if( (circuitControl.getScale() > 0.4) && (root.getChildren().contains(circuit)) ){
+                circuitControl.setScale(0.8);
+                circuitControl.zoom();
+            }
         });
 
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);

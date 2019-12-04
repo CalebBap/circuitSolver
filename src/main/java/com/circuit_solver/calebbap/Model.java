@@ -90,7 +90,8 @@ public class Model{
     void drawFromFile(){
         ArrayList<Coordinate> coordinates = read();
         for(int x = 0; x < coordinates.size(); x++){
-            Coordinate coordinate = coordinates.get(x);
+            double scale = View.getCircuitControl().getScale();
+            Coordinate coordinate = coordinates.get(x).scale(scale);
             View.getCircuitControl().drawComponent(coordinate);
         }
     }

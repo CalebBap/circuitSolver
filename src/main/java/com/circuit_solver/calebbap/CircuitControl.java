@@ -29,6 +29,8 @@ public class CircuitControl{
     private double componentEndX;
     private double componentEndY;
 
+    private static double scale = 1;
+
     private Model model;
 
     private Component component = null;
@@ -94,7 +96,7 @@ public class CircuitControl{
         int numYDots = 0;
         double height = View.getRoot().getHeight();
         double width = View.getRoot().getWidth();
-        dotSpacing = (width / height) * 8;
+        dotSpacing = (width / height) * 8 * scale;
         
         circuitGraphics.setFill(Color.BLUE);
         for (double x = dotSpacing; x <= ((width * 0.85) - dotSpacing); x += dotSpacing) {
@@ -310,7 +312,27 @@ public class CircuitControl{
         return true;
     }
 
+    public double getScale(){
+        return scale;
+    }
+
+    public void setScale(double multiplier){
+        scale *= multiplier;
+    }
+
     public Canvas getCircuit(){
         return circuit;
+    }
+
+    public void zoom(){
+        /*double currentScale = View.getScale();
+        circuit.setScaleX(currentScale);
+        circuit.setScaleY(currentScale);
+        overlayCircuit.setScaleX(currentScale);
+        overlayCircuit.setScaleY(currentScale);*/
+
+        clearCircuit();
+        drawCircuitBackground();
+        model.drawFromFile();
     }
 }
