@@ -60,17 +60,18 @@ public class Model{
     }
 
     ArrayList<Coordinate> read(){
-        double[] values = {0, 0, 0, 0};
-        Coordinate coordinates;
-        ArrayList<Coordinate> valueList = new ArrayList<Coordinate>();
 
-        int index = 0;
+        ArrayList<Coordinate> valueList = new ArrayList<Coordinate>();
 
         try{
             reader = new Scanner(file);
         }catch(FileNotFoundException e){
             return valueList;
         }
+
+        double[] values = {0, 0, 0, 0};
+        int index = 0;
+        Coordinate coordinates;
 
         while(reader.hasNext()){
             values[index] = Double.parseDouble(reader.next());
