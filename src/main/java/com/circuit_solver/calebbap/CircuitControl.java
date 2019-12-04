@@ -1,5 +1,6 @@
 package com.circuit_solver.calebbap;
 
+import com.circuit_solver.calebbap.View.Tool;
 import com.circuit_solver.calebbap.components.Wire;
 
 import javafx.event.EventHandler;
@@ -28,6 +29,11 @@ public class CircuitControl{
 
     private double componentEndX;
     private double componentEndY;
+
+    private double orginalMouseX;
+    private double orginalMouseY;
+    private double shiftX = 0;
+    private double shiftY = 0;
 
     private static double scale = 1;
 
@@ -63,17 +69,24 @@ public class CircuitControl{
         final EventHandler<MouseEvent> mousePressed = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 if (withinBounds(event.getX(), event.getY())) {
-                    double[] relativePosition = relativePosition(event.getX(), event.getY());
-                    clickX = relativePosition[0];
-                    clickY = relativePosition[1];
+                    if(View.getTool() != View.Tool.MOVE){
+                        double[] relativePosition = relativePosition(event.getX(), event.getY());
+                        clickX = relativePosition[0];
+                        clickY = relativePosition[1];
+                    }
+
+                    orginalMouseX = event.getY();
+                    orginalMouseY = event.getY();
                 }
             }
         };
 
         final EventHandler<MouseEvent> dragged = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if (withinBounds(event.getX(), event.getY())) {
+                if (withinBounds(event.getX(), event.getY()) && (View.getTool() != View.Tool.MOVE) ) {
                     drawOverlayComponent(event.getX(), event.getY());
+                    orginalMouseX = event.getX();
+                    orginalMouseY = event.getY();
                 }
             }
         };
@@ -84,11 +97,42 @@ public class CircuitControl{
             }
         };
 
+        final EventHandler<MouseEvent> draggedToMove = new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                if(withinBounds(event.getX(), event.getY()) && (View.getTool() == View.Tool.MOVE) ){
+                    double xShift = (orginalMouseX - event.getX()) * 0.5;
+                    double yShift = (orginalMouseY - event.getY()) * 0.5; 
+
+                    circuit.setTranslateX(xShift);
+                    overlayCircuit.setTranslateX(xShift);
+                    circuit.setTranslateY(yShift);
+                    overlayCircuit.setTranslateY(yShift);
+                }
+            }
+        };
+
         circuit.addEventHandler(MouseEvent.MOUSE_MOVED, mouseMoved);
         circuit.addEventHandler(MouseEvent.MOUSE_EXITED, mouseExited);
         circuit.addEventHandler(MouseEvent.MOUSE_PRESSED, mousePressed);
         circuit.addEventHandler(MouseEvent.MOUSE_DRAGGED, dragged);
+        circuit.addEventHandler(MouseEvent.MOUSE_DRAGGED, draggedToMove);
         circuit.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleased);
+    }
+
+    public double getShiftX(){
+        return shiftX;
+    }
+
+    public double getShiftY(){
+        return shiftY;
+    }
+
+    public void resetShiftX(){
+        shiftX = 0;
+    }
+
+    public void resetShiftY(){
+        shiftY = 0;
     }
 
     void drawCircuitBackground() {

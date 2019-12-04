@@ -35,7 +35,7 @@ public class View extends Application {
     VBox noCircuit;
 
     public enum Tool {
-        WIRE, RESISTOR
+        WIRE, RESISTOR, MOVE
     }
 
     private static Tool currentTool = Tool.WIRE;
@@ -106,7 +106,7 @@ public class View extends Application {
         });
 
         Button zoomIn = new Button("Zoom In");
-        tools.add(zoomIn, 1, 0);
+        tools.add(zoomIn, 0, 1);
         zoomIn.setOnAction(a -> {
             if( (circuitControl.getScale() < 5) && (root.getChildren().contains(circuit)) ){
                 circuitControl.setScale(1.2);
@@ -121,6 +121,12 @@ public class View extends Application {
                 circuitControl.setScale(0.8);
                 circuitControl.zoom();
             }
+        });
+
+        Button move = new Button("Move");
+        tools.add(move, 0, 2);
+        move.setOnAction(a -> {
+            currentTool = Tool.MOVE;
         });
 
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
