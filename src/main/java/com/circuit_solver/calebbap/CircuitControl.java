@@ -21,7 +21,7 @@ public class CircuitControl{
 
     private int[] numDots = { 0, 0 };
 
-    private double dotSpacing = 0;
+    //private double dotSpacing = 0;
     private double dotXPosition = 0;
     private double dotYPosition = 0;
 
@@ -58,8 +58,8 @@ public class CircuitControl{
     void mouseControl() {
         final EventHandler<MouseEvent> mouseMoved = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if ( (dotSpacing != 0) && (View.getTool() != View.Tool.MOVE) ) {
-                    circuitHover(event.getX(), event.getY());
+                if ( (View.getRoot().getChildren().contains(circuit)) && (View.getTool() != View.Tool.MOVE) ) {
+                    circuitHover(event.getX() + xShift, event.getY() + yShift);
                 }else{
                     clearOverlay();
                 }
@@ -76,7 +76,7 @@ public class CircuitControl{
             public void handle(MouseEvent event) {
                 if (withinBounds(event.getX(), event.getY())) {
                     if(View.getTool() != View.Tool.MOVE){
-                        double[] relativePosition = relativePosition(event.getX(), event.getY());
+                        double[] relativePosition = relativePosition(event.getX() + xShift, event.getY() + yShift);
                         clickX = relativePosition[0];
                         clickY = relativePosition[1];
                     }
@@ -90,9 +90,7 @@ public class CircuitControl{
         final EventHandler<MouseEvent> dragged = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 if (withinBounds(event.getX(), event.getY()) && (View.getTool() != View.Tool.MOVE) ) {
-                    drawOverlayComponent(event.getX(), event.getY());
-                    orginalMouseX = event.getX();
-                    orginalMouseY = event.getY();
+                    drawOverlayComponent(event.getX() + xShift, event.getY() + yShift);
                 }
             }
         };
@@ -102,8 +100,10 @@ public class CircuitControl{
                 if(View.getTool() != View.Tool.MOVE){
                     drawComponent();
                 }else{
-                    xShift = (orginalMouseX - event.getX()) * 0.5;
-                    yShift = (orginalMouseY - event.getY()) * 0.5; 
+                    /*xShift += (orginalMouseX - event.getX()) * 0.5;
+                    yShift += (orginalMouseY - event.getY()) * 0.5; 
+                    orginalMouseX = event.getX();
+                    orginalMouseY = event.getY();*/
 
                     clearCircuit();
                     shiftBackground(xShift, yShift);
@@ -114,9 +114,11 @@ public class CircuitControl{
 
         final EventHandler<MouseEvent> dragToMove = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if(/*withinBounds(event.getX(), event.getY()) && (*/View.getTool() == View.Tool.MOVE/*)*/ ){
-                    xShift = (orginalMouseX - event.getX()) * 0.5;
-                    yShift = (orginalMouseY - event.getY()) * 0.5; 
+                if(View.getTool() == View.Tool.MOVE){
+                    xShift += (orginalMouseX - event.getX()) * 0.1;
+                    yShift += (orginalMouseY - event.getY()) * 0.1; 
+                    orginalMouseX = event.getX();
+                    orginalMouseY = event.getY();
 
                     clearCircuit();
                     shiftBackground(xShift, yShift);
@@ -154,7 +156,7 @@ public class CircuitControl{
         int numYDots = 0;
         double height = View.getRoot().getHeight();
         double width = View.getRoot().getWidth();
-        dotSpacing = (width / height) * 8 * scale;
+        double dotSpacing = (width / height) * 8 * scale;
         
         circuitBackgroundGraphics.setFill(Color.BLUE);
         for (double x = dotSpacing; x <= ((width * 0.85) - dotSpacing); x += dotSpacing) {
@@ -176,7 +178,7 @@ public class CircuitControl{
         int numYDots = 0;
         double height = View.getRoot().getHeight();
         double width = View.getRoot().getWidth();
-        dotSpacing = (width / height) * 8 * scale;
+        double dotSpacing = (width / height) * 8 * scale;
 
         double xStart = dotSpacing;
         double yStart = dotSpacing;
@@ -244,6 +246,11 @@ public class CircuitControl{
     }
 
     public double[] relativePosition(double x, double y){
+        
+        double height = View.getRoot().getHeight();
+        double width = View.getRoot().getWidth();
+        double dotSpacing = (width / height) * 8 * scale;
+
         Bounds canvasBounds = circuit.getBoundsInParent();
         double relativeXPostion = x / canvasBounds.getWidth();
         double relativeYPostion = y / canvasBounds.getHeight();
@@ -274,10 +281,31 @@ public class CircuitControl{
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
         
-        double[] startPoint = relativePosition(coordinate.startX * width, coordinate.startY * height);
+        double xStart = (coordinate.startX * width);
+        double yStart = coordinate.startY * height;
+        double xEnd = coordinate.endX * width;
+        double yEnd = coordinate.endY * height;
+
+        if(xShift < 0){
+            xStart += xShift;
+            xEnd += xShift;
+        }else if(xShift > 0){
+            xStart -= xShift;
+            xEnd -= xShift;
+        }
+        if(yShift < 0){
+            yStart += yShift;
+            yEnd += yShift;
+        }else if(yShift > 0){
+            yStart -= yShift;
+            yEnd -= yShift;
+        } 
+
+        circuitGraphics.strokeLine(xStart, yStart, xEnd, yEnd);
+        /*double[] startPoint = relativePosition(coordinate.startX * width, coordinate.startY * height);
         double[] endPoint = relativePosition(coordinate.endX * width, coordinate.endY * height);
 
-        circuitGraphics.strokeLine(startPoint[0], startPoint[1], endPoint[0], endPoint[1]);
+        circuitGraphics.strokeLine(startPoint[0], startPoint[1], endPoint[0], endPoint[1]);*/
     }
 
     void drawComponent(){

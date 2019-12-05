@@ -37,10 +37,10 @@ public class Coordinate {
         double xShift = View.getCircuitControl().getXShift();
         double yShift = View.getCircuitControl().getYShift();
 
-        double scaledStartX = (startX * scale) + (xShift / width);
-        double scaledStartY = (startY * scale) + (yShift / height);
-        double scaledEndX = (endX * scale) + (xShift / width);
-        double scaledEndY = (endY * scale) + (yShift / height);
+        double scaledStartX = (startX * scale);// + (xShift / width);
+        double scaledStartY = (startY * scale);// + (yShift / height);
+        double scaledEndX = (endX * scale);// + (xShift / width);
+        double scaledEndY = (endY * scale);// + (yShift / height);
         
         return (new Coordinate(scaledStartX, scaledStartY, scaledEndX, scaledEndY));
     }
