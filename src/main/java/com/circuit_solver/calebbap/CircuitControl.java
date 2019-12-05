@@ -1,6 +1,7 @@
 package com.circuit_solver.calebbap;
 
-import com.circuit_solver.calebbap.components.*;
+import com.circuit_solver.calebbap.View.Tool;
+import com.circuit_solver.calebbap.components.Wire;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -16,6 +17,8 @@ public class CircuitControl{
     private GraphicsContext circuitGraphics;
     private Canvas overlayCircuit;
     private GraphicsContext overlayCircuitGraphics;
+    private Canvas circuitBackground;
+    private GraphicsContext circuitBackgroundGraphics;
 
     private int[] numDots = { 0, 0 };
 
@@ -42,11 +45,14 @@ public class CircuitControl{
     double componentRadius = 20;
 
     CircuitControl(Canvas newCircuit, GraphicsContext newCircuitGraphics, Canvas newOverlayCircuit,
-            GraphicsContext newOverlayCircuitGraphics, Model newModel) {
+            GraphicsContext newOverlayCircuitGraphics, Canvas newCircuitBackground, GraphicsContext newCircuitBackgroundGraphics, 
+            Model newModel) {
         circuit = newCircuit;
         circuitGraphics = newCircuitGraphics;
         overlayCircuit = newOverlayCircuit;
         overlayCircuitGraphics = newOverlayCircuitGraphics;
+        circuitBackground = newCircuitBackground;
+        circuitBackgroundGraphics = newCircuitBackgroundGraphics;
         model = newModel;
     }
 
@@ -141,10 +147,10 @@ public class CircuitControl{
         double width = View.getRoot().getWidth();
         dotSpacing = (width / height) * 8 * scale;
         
-        circuitGraphics.setFill(Color.BLUE);
+        circuitBackgroundGraphics.setFill(Color.BLUE);
         for (double x = dotSpacing; x <= ((width * 0.85) - dotSpacing); x += dotSpacing) {
             for (double y = dotSpacing; y <= ((height * 0.95) - dotSpacing); y += dotSpacing) {
-                circuitGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
+                circuitBackgroundGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
                 numYDots++;
             }
             numXDots++;
@@ -174,6 +180,7 @@ public class CircuitControl{
 
     public void clearCircuit() {
         circuitGraphics.clearRect(0, 0, circuit.getWidth(), circuit.getHeight());
+        circuitBackgroundGraphics.clearRect(0, 0, circuitBackground.getWidth(), circuitBackground.getHeight());
     }
 
     public void resizeCircuit() {
@@ -368,12 +375,6 @@ public class CircuitControl{
     }
 
     public void zoom(){
-        /*double currentScale = View.getScale();
-        circuit.setScaleX(currentScale);
-        circuit.setScaleY(currentScale);
-        overlayCircuit.setScaleX(currentScale);
-        overlayCircuit.setScaleY(currentScale);*/
-
         clearCircuit();
         drawCircuitBackground();
         model.drawFromFile();

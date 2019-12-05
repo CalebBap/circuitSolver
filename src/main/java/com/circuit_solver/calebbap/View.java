@@ -1,7 +1,5 @@
 package com.circuit_solver.calebbap;
 
-import com.sun.prism.paint.Color;
-
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
@@ -15,9 +13,6 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
@@ -27,8 +22,7 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 
-import javafx.event.EventHandler;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.Cursor;
 
 public class View extends Application {
     private Canvas circuit;
@@ -37,11 +31,11 @@ public class View extends Application {
 
     private Canvas overlayCircuit;
     private GraphicsContext overlayCircuitGraphics;
-    CircuitControl overlayCircuitControl;
+
+    private Canvas circuitBackground;
+    private GraphicsContext circuitBackgroundGraphics;
 
     static GridPane root;
-    private ScrollPane circuitScrollPane;
-    private Pane circuitPane;
     VBox noCircuit;
 
     public enum Tool {
@@ -58,13 +52,6 @@ public class View extends Application {
         stage = primaryStage;
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Circuit Solver");
-        /*final EventHandler<MouseEvent> testPress = new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent event) {
-                System.out.println(event.getSource());
-            }
-        };
-
-        primaryStage.addEventHandler(MouseEvent.MOUSE_PRESSED, testPress);*/
 
         root = new GridPane();
         root.setId("root");
@@ -119,6 +106,7 @@ public class View extends Application {
         wireButton.setId("wire");
         tools.add(wireButton, 0, 0);
         wireButton.setOnAction(a -> {
+            getStage().getScene().setCursor(Cursor.CROSSHAIR);
             currentTool = Tool.WIRE;
         });
 
@@ -143,31 +131,18 @@ public class View extends Application {
         Button move = new Button("Move");
         tools.add(move, 0, 2);
         move.setOnAction(a -> {
+            getStage().getScene().setCursor(Cursor.MOVE);
             currentTool = Tool.MOVE;
         });
-
-        
-        circuitScrollPane = new ScrollPane();
-        circuitScrollPane.setBackground(Background.EMPTY);
-        circuitScrollPane.setId("circuit_scroll_pane");
-        circuitScrollPane.setMaxSize(frameWidth * 0.85, frameHeight * 0.95);
-        circuitScrollPane.setMinSize(frameWidth * 0.85, frameHeight * 0.95);
-
-        circuitPane = new Pane();
-        circuitPane.setPickOnBounds(false);
-        circuitScrollPane.setBackground(Background.EMPTY);
-        circuitPane.setId("circuit_pane");
-        circuitPane.setMaxSize(frameWidth * 0.85, frameHeight * 0.95);
-        circuitPane.setMinSize(frameWidth * 0.85, frameHeight * 0.95);
 
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         circuitGraphics = circuit.getGraphicsContext2D();
 
+        circuitBackground = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
+        circuitBackgroundGraphics = circuit.getGraphicsContext2D();
+
         overlayCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         overlayCircuitGraphics = overlayCircuit.getGraphicsContext2D();
-
-        circuitPane.getChildren().addAll(overlayCircuit, circuit);
-        circuitScrollPane.setContent(circuitPane);
 
         model = new Model();
 
@@ -224,15 +199,16 @@ public class View extends Application {
 
         if (firstCircuit) {
             root.getChildren().remove(noCircuit);
-            /*GridPane.setRowIndex(overlayCircuit, 1);
-            GridPane.setColumnIndex(overlayCircuit, 1);*/
-            GridPane.setRowIndex(circuitScrollPane, 1);
-            GridPane.setColumnIndex(circuitScrollPane, 1);
-            //root.getChildren().addAll(overlayCircuit, circuit);
-            root.getChildren().add(circuitScrollPane);
+            GridPane.setRowIndex(overlayCircuit, 1);
+            GridPane.setColumnIndex(overlayCircuit, 1);
+            GridPane.setRowIndex(circuitBackground, 1);
+            GridPane.setColumnIndex(circuitBackground, 1);
+            GridPane.setRowIndex(circuit, 1);
+            GridPane.setColumnIndex(circuit, 1);
+            root.getChildren().addAll(overlayCircuit, circuitBackground, circuit);
 
             circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics,
-                    model);
+                circuitBackground, circuitBackgroundGraphics, model);
             circuitControl.drawCircuitBackground();
             circuitControl.mouseControl();
         } else {
