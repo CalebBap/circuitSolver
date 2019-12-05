@@ -34,10 +34,12 @@ public class Coordinate{
     }
 
     public Coordinate scale(double scale){
-        double scaledStartX = startX * scale;
-        double scaledStartY = startY * scale;
-        double scaledEndX = endX * scale;
-        double scaledEndY = endY * scale;
+        double scaledStartX = (startX * scale);// + View.getCircuitControl().getShiftX();
+        double scaledStartY = (startY * scale);// + View.getCircuitControl().getShiftX();
+        double scaledEndX = (endX * scale);// + View.getCircuitControl().getShiftY();
+        double scaledEndY = (endY * scale);// + View.getCircuitControl().getShiftY();
+        View.getCircuitControl().resetShiftX();
+        View.getCircuitControl().resetShiftY();
 
         if(scaledStartX < 0){
             scaledStartX = 0.01;
@@ -63,11 +65,11 @@ public class Coordinate{
             scaledEndY = 1;
         }
 
-        System.out.println("(" + Double.toString(startX) + ", " + Double.toString(startY) + ") -> (" +
+        /*System.out.println("(" + Double.toString(startX) + ", " + Double.toString(startY) + ") -> (" +
             Double.toString(endX) + ", " + Double.toString(endY) + ")");
         System.out.println("(" + Double.toString(scaledStartX) + ", " + Double.toString(scaledStartY) + ") -> (" +
             Double.toString(scaledEndX) + ", " + Double.toString(scaledEndY) + ")");
-        System.out.println("");
+        System.out.println("");*/
 
         return (new Coordinate(scaledStartX, scaledStartY, scaledEndX, scaledEndY));
     }
