@@ -172,6 +172,8 @@ public class CircuitControl{
     }
 
     void shiftBackground(double xShift, double yShift) {
+        int numXDots = 0;
+        int numYDots = 0;
         double height = View.getRoot().getHeight();
         double width = View.getRoot().getWidth();
         dotSpacing = (width / height) * 8 * scale;
@@ -200,8 +202,15 @@ public class CircuitControl{
         for (double x = xStart; x <= xEnd; x += dotSpacing) {
             for (double y = yStart; y <= yEnd; y += dotSpacing) {
                 circuitBackgroundGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
+                numYDots++;
             }
+            numXDots++;
         }
+
+        numYDots /= numXDots;
+
+        numDots[0] = numXDots;
+        numDots[1] = numYDots;
     }
 
     void circuitHover(double x, double y) {
@@ -259,14 +268,16 @@ public class CircuitControl{
 
     // Update with gap between wires for component?
     void drawComponent(Coordinate coordinate){
+        double width = circuitBackground.getWidth();
+        double height = circuitBackground.getHeight();
+
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
         
-        double[] startPoint = relativePosition(coordinate.startX * circuit.getWidth(), coordinate.startY * circuit.getHeight());
-        double[] endPoint = relativePosition(coordinate.endX * circuit.getWidth(), coordinate.endY * circuit.getHeight());
+        double[] startPoint = relativePosition(coordinate.startX * width, coordinate.startY * height);
+        double[] endPoint = relativePosition(coordinate.endX * width, coordinate.endY * height);
 
-        circuitGraphics.strokeLine(startPoint[0], startPoint[1], 
-            endPoint[0], endPoint[1]);
+        circuitGraphics.strokeLine(startPoint[0], startPoint[1], endPoint[0], endPoint[1]);
     }
 
     void drawComponent(){
