@@ -1,6 +1,5 @@
 package com.circuit_solver.calebbap;
 
-import com.circuit_solver.calebbap.View.Tool;
 import com.circuit_solver.calebbap.components.Wire;
 
 import javafx.event.EventHandler;
@@ -59,8 +58,10 @@ public class CircuitControl{
     void mouseControl() {
         final EventHandler<MouseEvent> mouseMoved = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if (dotSpacing != 0) {
+                if ( (dotSpacing != 0) && (View.getTool() != View.Tool.MOVE) ) {
                     circuitHover(event.getX(), event.getY());
+                }else{
+                    clearOverlay();
                 }
             }
         };
@@ -104,9 +105,9 @@ public class CircuitControl{
                     xShift = (orginalMouseX - event.getX()) * 0.5;
                     yShift = (orginalMouseY - event.getY()) * 0.5; 
 
-                    //clearCircuit();
-                    circuitBackgroundGraphics.clearRect(0, 0, circuitBackground.getWidth(), circuitBackground.getHeight());
+                    clearCircuit();
                     shiftBackground(xShift, yShift);
+                    model.drawFromFile();
                 }
             }
         };
@@ -117,11 +118,9 @@ public class CircuitControl{
                     xShift = (orginalMouseX - event.getX()) * 0.5;
                     yShift = (orginalMouseY - event.getY()) * 0.5; 
 
-                    //clearCircuit();
-                    // Update code in mouse release too
-                    circuitBackgroundGraphics.clearRect(0, 0, circuitBackground.getWidth(), circuitBackground.getHeight());
+                    clearCircuit();
                     shiftBackground(xShift, yShift);
-                    //model.drawFromFile();
+                    model.drawFromFile();
                 }
             }
         };
@@ -235,7 +234,7 @@ public class CircuitControl{
         overlayCircuit.setWidth(width * 0.85);
     }
 
-    double[] relativePosition(double x, double y){
+    public double[] relativePosition(double x, double y){
         Bounds canvasBounds = circuit.getBoundsInParent();
         double relativeXPostion = x / canvasBounds.getWidth();
         double relativeYPostion = y / canvasBounds.getHeight();

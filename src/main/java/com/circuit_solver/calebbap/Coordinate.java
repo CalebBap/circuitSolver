@@ -41,8 +41,14 @@ public class Coordinate{
 
         double scaledStartX = (startX * scale) + (xShift / width);
         double scaledStartY = (startY * scale) + (yShift / height);
+        //double[] relativeStartPosition = View.getCircuitControl().relativePosition(scaledStartX, scaledStartY); 
+        //scaledStartX = relativeStartPosition[0];
+        //scaledStartY = relativeStartPosition[1];
         double scaledEndX = (endX * scale) + (xShift / width);
         double scaledEndY = (endY * scale) + (yShift / height);
+        //double[] relativeEndPosition = View.getCircuitControl().relativePosition(scaledEndX, scaledEndY); 
+        //scaledEndX = relativeEndPosition[0];
+        //scaledEndY = relativeEndPosition[1];
         //View.getCircuitControl().resetXShift();
         //View.getCircuitControl().resetYShift();
 
