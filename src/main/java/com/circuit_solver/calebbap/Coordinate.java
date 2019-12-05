@@ -34,14 +34,19 @@ public class Coordinate{
     }
 
     public Coordinate scale(double scale){
-        double scaledStartX = (startX * scale);// + View.getCircuitControl().getShiftX();
-        double scaledStartY = (startY * scale);// + View.getCircuitControl().getShiftX();
-        double scaledEndX = (endX * scale);// + View.getCircuitControl().getShiftY();
-        double scaledEndY = (endY * scale);// + View.getCircuitControl().getShiftY();
-        View.getCircuitControl().resetShiftX();
-        View.getCircuitControl().resetShiftY();
+        double width = View.getRoot().getWidth();
+        double height = View.getRoot().getHeight();
+        double xShift = View.getCircuitControl().getXShift();
+        double yShift = View.getCircuitControl().getYShift();
 
-        if(scaledStartX < 0){
+        double scaledStartX = (startX * scale) + (xShift / width);
+        double scaledStartY = (startY * scale) + (yShift / height);
+        double scaledEndX = (endX * scale) + (xShift / width);
+        double scaledEndY = (endY * scale) + (yShift / height);
+        //View.getCircuitControl().resetXShift();
+        //View.getCircuitControl().resetYShift();
+
+        /*if(scaledStartX < 0){
             scaledStartX = 0.01;
         }else if(scaledStartX > 1){
             scaledStartX = 1;

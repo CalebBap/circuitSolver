@@ -34,8 +34,8 @@ public class CircuitControl{
 
     private double orginalMouseX;
     private double orginalMouseY;
-    private double shiftX = 0;
-    private double shiftY = 0;
+    private double xShift = 0;
+    private double yShift = 0;
 
     private static double scale = 1;
 
@@ -98,20 +98,30 @@ public class CircuitControl{
 
         final EventHandler<MouseEvent> mouseReleased = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                drawComponent();
+                if(View.getTool() != View.Tool.MOVE){
+                    drawComponent();
+                }else{
+                    xShift = (orginalMouseX - event.getX()) * 0.5;
+                    yShift = (orginalMouseY - event.getY()) * 0.5; 
+
+                    //clearCircuit();
+                    circuitBackgroundGraphics.clearRect(0, 0, circuitBackground.getWidth(), circuitBackground.getHeight());
+                    shiftBackground(xShift, yShift);
+                }
             }
         };
 
-        final EventHandler<MouseEvent> draggedToMove = new EventHandler<MouseEvent>() {
+        final EventHandler<MouseEvent> dragToMove = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if(withinBounds(event.getX(), event.getY()) && (View.getTool() == View.Tool.MOVE) ){
-                    double xShift = (orginalMouseX - event.getX()) * 0.5;
-                    double yShift = (orginalMouseY - event.getY()) * 0.5; 
+                if(/*withinBounds(event.getX(), event.getY()) && (*/View.getTool() == View.Tool.MOVE/*)*/ ){
+                    xShift = (orginalMouseX - event.getX()) * 0.5;
+                    yShift = (orginalMouseY - event.getY()) * 0.5; 
 
-                    circuit.setTranslateX(xShift);
-                    overlayCircuit.setTranslateX(xShift);
-                    circuit.setTranslateY(yShift);
-                    overlayCircuit.setTranslateY(yShift);
+                    //clearCircuit();
+                    // Update code in mouse release too
+                    circuitBackgroundGraphics.clearRect(0, 0, circuitBackground.getWidth(), circuitBackground.getHeight());
+                    shiftBackground(xShift, yShift);
+                    //model.drawFromFile();
                 }
             }
         };
@@ -120,24 +130,24 @@ public class CircuitControl{
         circuit.addEventHandler(MouseEvent.MOUSE_EXITED, mouseExited);
         circuit.addEventHandler(MouseEvent.MOUSE_PRESSED, mousePressed);
         circuit.addEventHandler(MouseEvent.MOUSE_DRAGGED, dragged);
-        circuit.addEventHandler(MouseEvent.MOUSE_DRAGGED, draggedToMove);
+        circuit.addEventHandler(MouseEvent.MOUSE_DRAGGED, dragToMove);
         circuit.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleased);
     }
 
-    public double getShiftX(){
-        return shiftX;
+    public double getXShift(){
+        return xShift;
     }
 
-    public double getShiftY(){
-        return shiftY;
+    public double getYShift(){
+        return yShift;
     }
 
-    public void resetShiftX(){
-        shiftX = 0;
+    public void resetXShift(){
+        xShift = 0;
     }
 
-    public void resetShiftY(){
-        shiftY = 0;
+    public void resetYShift(){
+        yShift = 0;
     }
 
     void drawCircuitBackground() {
@@ -160,6 +170,39 @@ public class CircuitControl{
 
         numDots[0] = numXDots;
         numDots[1] = numYDots;
+    }
+
+    void shiftBackground(double xShift, double yShift) {
+        double height = View.getRoot().getHeight();
+        double width = View.getRoot().getWidth();
+        dotSpacing = (width / height) * 8 * scale;
+
+        double xStart = dotSpacing;
+        double yStart = dotSpacing;
+        double xEnd = (width * 0.85) - dotSpacing;
+        double yEnd = (height * 0.95) - dotSpacing;
+
+        if(xShift < 0){
+            xStart += xShift;
+            xEnd -= xShift;
+        }else if(xShift > 0){
+            xStart -= xShift;
+            xEnd += xShift;
+        }
+        if(yShift < 0){
+            yStart += yShift;
+            yEnd -= yShift;
+        }else if(yShift > 0){
+            yStart -= yShift;
+            yEnd += yShift;
+        }     
+
+        circuitBackgroundGraphics.setFill(Color.BLUE);
+        for (double x = xStart; x <= xEnd; x += dotSpacing) {
+            for (double y = yStart; y <= yEnd; y += dotSpacing) {
+                circuitBackgroundGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
+            }
+        }
     }
 
     void circuitHover(double x, double y) {
