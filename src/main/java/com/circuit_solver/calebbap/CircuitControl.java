@@ -79,7 +79,7 @@ public class CircuitControl{
                         clickX = relativePosition[0];
                         clickY = relativePosition[1];
                     }
-                    orginalMouseX = event.getY();
+                    orginalMouseX = event.getX();
                     orginalMouseY = event.getY();
                 }
             }
@@ -97,10 +97,6 @@ public class CircuitControl{
             public void handle(MouseEvent event) {
                 if(View.getTool() != View.Tool.MOVE){
                     drawComponent();
-                }else{
-                    clearCircuit();
-                    shiftBackground();
-                    model.drawFromFile();
                 }
             }
         };
@@ -110,8 +106,18 @@ public class CircuitControl{
                 if(View.getTool() == View.Tool.MOVE){
                     double height = View.getRoot().getHeight();
                     double width = View.getRoot().getWidth();
-                    xShift += (orginalMouseX - event.getX()) * 0.4 * (height / width);
-                    yShift += (orginalMouseY - event.getY()) * 0.4 * (width / height); 
+
+                    if(event.getX() > orginalMouseX){
+                        xShift += (Math.abs(orginalMouseX - event.getX())) * 0.4;
+                    }else{
+                        xShift -= (Math.abs(orginalMouseX - event.getX())) * 0.4;
+                    }
+                    if(event.getY() > orginalMouseY){
+                        yShift += (Math.abs(orginalMouseY - event.getY())) * 0.4;
+                    }else{
+                        yShift -= (Math.abs(orginalMouseY - event.getY())) * 0.4;
+                    }
+
                     orginalMouseX = event.getX();
                     orginalMouseY = event.getY();
 
@@ -175,25 +181,10 @@ public class CircuitControl{
         double width = View.getRoot().getWidth();
         double dotSpacing = (width / height) * 8 * scale;
 
-        double xStart = dotSpacing;
-        double yStart = dotSpacing;
-        double xEnd = (width * 0.85) - dotSpacing;
-        double yEnd = (height * 0.95) - dotSpacing;
-
-        if(xShift < 0){
-            xStart += xShift;
-            xEnd -= xShift;
-        }else if(xShift > 0){
-            xStart -= xShift;
-            xEnd += xShift;
-        }
-        if(yShift < 0){
-            yStart += yShift;
-            yEnd -= yShift;
-        }else if(yShift > 0){
-            yStart -= yShift;
-            yEnd += yShift;
-        }     
+        double xStart = dotSpacing - Math.abs(xShift);
+        double yStart = dotSpacing - Math.abs(yShift);
+        double xEnd = ((width * 0.85) - dotSpacing) + Math.abs(xShift);
+        double yEnd = ((height * 0.95) - dotSpacing) + Math.abs(yShift);
 
         circuitBackgroundGraphics.setFill(Color.BLUE);
         for (double x = xStart; x <= xEnd; x += dotSpacing) {
@@ -276,25 +267,10 @@ public class CircuitControl{
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
         
-        double xStart = coordinate.startX * width;
-        double yStart = coordinate.startY * height;
-        double xEnd = coordinate.endX * width;
-        double yEnd = coordinate.endY * height;
-
-        if(xShift < 0){
-            xStart += xShift;
-            xEnd += xShift;
-        }else if(xShift > 0){
-            xStart -= xShift;
-            xEnd -= xShift;
-        }
-        if(yShift < 0){
-            yStart += yShift;
-            yEnd += yShift;
-        }else if(yShift > 0){
-            yStart -= yShift;
-            yEnd -= yShift;
-        } 
+        double xStart = (coordinate.startX * width) + xShift;
+        double yStart = (coordinate.startY * height) + yShift;
+        double xEnd = (coordinate.endX * width) + xShift;
+        double yEnd = (coordinate.endY * height) + yShift; 
 
         circuitGraphics.strokeLine(xStart, yStart, xEnd, yEnd);
     }
