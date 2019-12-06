@@ -1,6 +1,6 @@
 package com.circuit_solver.calebbap;
 
-import com.circuit_solver.calebbap.components.Wire;
+import com.circuit_solver.calebbap.components.*;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -118,6 +118,20 @@ public class CircuitControl{
                     clearCircuit();
                     shiftBackground();
                     model.drawFromFile();
+                }
+            }
+        };
+
+        final EventHandler<MouseEvent> draggedToMove = new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                if(withinBounds(event.getX(), event.getY()) && (View.getTool() == View.Tool.MOVE) ){
+                    double xShift = (orginalMouseX - event.getX()) * 0.5;
+                    double yShift = (orginalMouseY - event.getY()) * 0.5; 
+
+                    circuit.setTranslateX(xShift);
+                    overlayCircuit.setTranslateX(xShift);
+                    circuit.setTranslateY(yShift);
+                    overlayCircuit.setTranslateY(yShift);
                 }
             }
         };
