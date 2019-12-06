@@ -122,20 +122,6 @@ public class CircuitControl{
             }
         };
 
-        final EventHandler<MouseEvent> draggedToMove = new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent event) {
-                if(withinBounds(event.getX(), event.getY()) && (View.getTool() == View.Tool.MOVE) ){
-                    double xShift = (orginalMouseX - event.getX()) * 0.5;
-                    double yShift = (orginalMouseY - event.getY()) * 0.5; 
-
-                    circuit.setTranslateX(xShift);
-                    overlayCircuit.setTranslateX(xShift);
-                    circuit.setTranslateY(yShift);
-                    overlayCircuit.setTranslateY(yShift);
-                }
-            }
-        };
-
         circuit.addEventHandler(MouseEvent.MOUSE_MOVED, mouseMoved);
         circuit.addEventHandler(MouseEvent.MOUSE_EXITED, mouseExited);
         circuit.addEventHandler(MouseEvent.MOUSE_PRESSED, mousePressed);
