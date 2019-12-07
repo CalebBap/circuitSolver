@@ -35,15 +35,15 @@ public class CircuitControl{
     private double orginalMouseY;
     private double xShift = 0;
     private double yShift = 0;
+
     private Coordinate backgroundShift = new Coordinate(0, 0, 0, 0);
-    private Coordinate backgroundBounds = new Coordinate();
 
     private static double scale = 1;
+    private static double dotSpacing;
 
     private Model model;
 
     private Component component = null;
-    double componentRadius = 20;
 
     CircuitControl(Canvas newCircuit, GraphicsContext newCircuitGraphics, Canvas newOverlayCircuit,
             GraphicsContext newOverlayCircuitGraphics, Canvas newCircuitBackground, GraphicsContext newCircuitBackgroundGraphics, 
@@ -157,7 +157,7 @@ public class CircuitControl{
         int numYDots = 0;
         double height = View.getRoot().getHeight();
         double width = View.getRoot().getWidth();
-        double dotSpacing = (width / height) * 8 * scale;
+        dotSpacing = (width / height) * 8 * scale;
         
         circuitBackgroundGraphics.setFill(Color.BLUE);
         for (double x = 0; x <= (width * 0.85); x += dotSpacing) {
@@ -173,7 +173,7 @@ public class CircuitControl{
         numDots[0] = numXDots;
         numDots[1] = numYDots;
 
-        backgroundBounds.setValues(dotSpacing, dotSpacing, (width * 0.85), (height * 0.95));
+        Component.setRadius(dotSpacing * 2);
     }
 
     void shiftBackground() {
@@ -181,7 +181,7 @@ public class CircuitControl{
         int numYDots = 0;
         double height = View.getRoot().getHeight();
         double width = View.getRoot().getWidth();
-        double dotSpacing = (width / height) * 8 * scale;
+        dotSpacing = (width / height) * 8 * scale;
         
         double xStart = 0;
         double xEnd = width * 0.85;
@@ -228,7 +228,7 @@ public class CircuitControl{
         backgroundShift = new Coordinate(dotSpacing - xStart, dotSpacing - yStart, (width * 0.85) - xEnd, 
             (height * 0.95) - yEnd);
 
-        backgroundBounds.setValues(xStart, yStart, xEnd, yEnd);
+        Component.setRadius(dotSpacing * 2);
     }
 
     void circuitHover(double x, double y) {
@@ -246,7 +246,8 @@ public class CircuitControl{
     public double[] relativePosition(double x, double y){
         double width = View.getRoot().getWidth();
         double height = View.getRoot().getHeight();
-        double dotSpacing = (width / height) * 8 * scale;
+        dotSpacing = (width / height) * 8 * scale;
+        Component.setRadius(dotSpacing * 2);
         Bounds canvasBounds = circuitBackground.getBoundsInParent();
 
         double relativeXPostion = x / canvasBounds.getWidth();
@@ -316,6 +317,8 @@ public class CircuitControl{
                         higherEnd.startX, higherEnd.startY), angle);
                         break;
                     case RESISTOR:
+                        component = new Resistor(new Coordinate(lowerEnd.endX, lowerEnd.endY, 
+                        higherEnd.startX, higherEnd.startY), angle, 10);
                         break;
                     default:
                         return;
@@ -348,6 +351,10 @@ public class CircuitControl{
 
         double middleX = Math.abs(clickX + componentEndX) / 2;
         double middleY = Math.abs(clickY + componentEndY) / 2;
+
+        double componentRadius = Component.getRadius();
+
+        System.out.println("Component Radius: " + (Double.toString(componentRadius)));
         
         if(clickX == componentEndX){
             lowerEnd.startX = lowerEnd.endX = higherEnd.startX = higherEnd.endX = clickX;
@@ -477,5 +484,9 @@ public class CircuitControl{
 
     public void resetYShift(){
         yShift = 0;
+    }
+
+    public static double getDotSpacing(){
+        return dotSpacing;
     }
 }

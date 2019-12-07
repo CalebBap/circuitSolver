@@ -105,6 +105,13 @@ public class View extends Application {
             getStage().getScene().setCursor(Cursor.CROSSHAIR);
             currentTool = Tool.WIRE;
         });
+        Button resistorButton = new Button("Resistor");
+        resistorButton.setId("resistor");
+        tools.add(resistorButton, 1, 0);
+        resistorButton.setOnAction(a -> {
+            getStage().getScene().setCursor(Cursor.CROSSHAIR);
+            currentTool = Tool.RESISTOR;
+        });
         Button zoomIn = new Button("Zoom In");
         tools.add(zoomIn, 0, 1);
         zoomIn.setOnAction(a -> {
