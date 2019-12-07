@@ -14,10 +14,8 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -37,8 +35,6 @@ public class View extends Application {
     private GraphicsContext circuitBackgroundGraphics;
 
     static GridPane root;
-    private ScrollPane circuitScrollPane;
-    private Pane circuitPane;
     VBox noCircuit;
 
     public enum Tool {
@@ -55,13 +51,6 @@ public class View extends Application {
         stage = primaryStage;
         primaryStage.setMaximized(true);
         primaryStage.setTitle("Circuit Solver");
-        /*final EventHandler<MouseEvent> testPress = new EventHandler<MouseEvent>() {
-            public void handle(MouseEvent event) {
-                System.out.println(event.getSource());
-            }
-        };
-
-        primaryStage.addEventHandler(MouseEvent.MOUSE_PRESSED, testPress);*/
 
         root = new GridPane();
         root.setId("root");
@@ -93,21 +82,18 @@ public class View extends Application {
         root.getColumnConstraints().add(col1);
 
         MenuBar menuBar = new MenuBar();
-
         final Menu menuItem = new Menu("File");
-
         MenuItem menuFileNew = new MenuItem("New Circuit");
         menuFileNew.setOnAction(event -> {
             newCircuit();
         });
-
         MenuItem menuFileOpen = new MenuItem("Open Circuit");
         menuFileOpen.setOnAction(event -> {
             openCircuit();
         });
-
         menuItem.getItems().addAll(menuFileNew, menuFileOpen);
         menuBar.getMenus().add(menuItem);
+
 
         GridPane tools = new GridPane();
         tools.setId("toolsGrid");
@@ -119,7 +105,6 @@ public class View extends Application {
             getStage().getScene().setCursor(Cursor.CROSSHAIR);
             currentTool = Tool.WIRE;
         });
-
         Button zoomIn = new Button("Zoom In");
         tools.add(zoomIn, 0, 1);
         zoomIn.setOnAction(a -> {
@@ -128,7 +113,6 @@ public class View extends Application {
                 circuitControl.zoom();
             }
         });
-
         Button zoomOut = new Button("Zoom Out");
         tools.add(zoomOut, 1, 1);
         zoomOut.setOnAction(a -> {
@@ -137,13 +121,13 @@ public class View extends Application {
                 circuitControl.zoom();
             }
         });
-
         Button move = new Button("Move");
         tools.add(move, 0, 2);
         move.setOnAction(a -> {
             getStage().getScene().setCursor(Cursor.MOVE);
             currentTool = Tool.MOVE;
         });
+
 
         circuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         circuitGraphics = circuit.getGraphicsContext2D();
@@ -154,7 +138,9 @@ public class View extends Application {
         overlayCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         overlayCircuitGraphics = overlayCircuit.getGraphicsContext2D();
 
+
         model = new Model();
+
 
         Hyperlink newLink = new Hyperlink("new");
         newLink.setOnAction(new EventHandler<ActionEvent>() {
@@ -163,7 +149,6 @@ public class View extends Application {
             }
 
         });
-
         Hyperlink openLink = new Hyperlink("open");
         openLink.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
@@ -171,6 +156,7 @@ public class View extends Application {
             }
 
         });
+
 
         noCircuit = new VBox();
         noCircuit.setAlignment(Pos.CENTER);
@@ -195,26 +181,19 @@ public class View extends Application {
         root.heightProperty().addListener(windowResizeListener);
     }
 
-    void windowResized() {
-        if (root.getChildren().contains(circuit)){
-            circuitControl.resizeCircuit();
-            circuitControl.clearCircuit();
-            circuitControl.drawCircuitBackground();
-            model.drawFromFile();
-        }
-    }
-
     void initCircuit() {
         Boolean firstCircuit = !(root.getChildren().contains(circuit));
 
         if (firstCircuit) {
             root.getChildren().remove(noCircuit);
+            
             GridPane.setRowIndex(overlayCircuit, 1);
             GridPane.setColumnIndex(overlayCircuit, 1);
             GridPane.setRowIndex(circuitBackground, 1);
             GridPane.setColumnIndex(circuitBackground, 1);
             GridPane.setRowIndex(circuit, 1);
             GridPane.setColumnIndex(circuit, 1);
+            
             root.getChildren().addAll(overlayCircuit, circuitBackground, circuit);
 
             circuitControl = new CircuitControl(circuit, circuitGraphics, overlayCircuit, overlayCircuitGraphics,
@@ -223,19 +202,38 @@ public class View extends Application {
             circuitControl.mouseControl();
         } else {
             circuitGraphics.clearRect(0, 0, circuit.getWidth(), circuit.getHeight());
-            circuitControl.drawCircuitBackground();
+            circuitControl.shiftBackground();
         }
     }
 
     void newCircuit() {
         if (model.init(true)) {
+            if(circuitControl != null){
+                circuitControl.setScale(1 / circuitControl.getScale());
+                circuitControl.resetXShift();
+                circuitControl.resetYShift();
+            }
             initCircuit();
         }
     }
 
     void openCircuit() {
         if (model.init(false)) {
+            if(circuitControl != null){
+                circuitControl.setScale(1 / circuitControl.getScale());
+                circuitControl.resetXShift();
+                circuitControl.resetYShift();
+            }
             initCircuit();
+            model.drawFromFile();
+        }
+    }
+
+    void windowResized() {
+        if (root.getChildren().contains(circuit)){
+            circuitControl.resizeCircuit();
+            circuitControl.clearCircuit();
+            circuitControl.shiftBackground();
             model.drawFromFile();
         }
     }

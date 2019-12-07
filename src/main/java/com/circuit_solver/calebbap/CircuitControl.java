@@ -4,6 +4,7 @@ import com.circuit_solver.calebbap.components.*;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
+import javafx.scene.Cursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
@@ -34,6 +35,8 @@ public class CircuitControl{
     private double orginalMouseY;
     private double xShift = 0;
     private double yShift = 0;
+    private Coordinate backgroundShift = new Coordinate(0, 0, 0, 0);
+    private Coordinate backgroundBounds = new Coordinate();
 
     private static double scale = 1;
 
@@ -58,16 +61,33 @@ public class CircuitControl{
         final EventHandler<MouseEvent> mouseMoved = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 if ( (View.getRoot().getChildren().contains(circuit)) && (View.getTool() != View.Tool.MOVE) ) {
-                    circuitHover(event.getX() + xShift, event.getY() + yShift);
-                }else{
+                    circuitHover(event.getX(), event.getY());
+                }/*else{
                     clearOverlay();
-                }
+                }*/
             }
         };
 
         final EventHandler<MouseEvent> mouseExited = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 clearOverlay();
+                View.getStage().getScene().setCursor(Cursor.DEFAULT);
+            }
+        };
+
+        final EventHandler<MouseEvent> mouseEntered = new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                switch(View.getTool()){
+                    case WIRE:
+                        View.getStage().getScene().setCursor(Cursor.CROSSHAIR);
+                        break;
+                    case MOVE:
+                        View.getStage().getScene().setCursor(Cursor.MOVE);
+                        break;
+                    default:
+                        View.getStage().getScene().setCursor(Cursor.CROSSHAIR);
+                        break;
+                }
             }
         };
 
@@ -75,7 +95,7 @@ public class CircuitControl{
             public void handle(MouseEvent event) {
                 if (withinBounds(event.getX(), event.getY())) {
                     if(View.getTool() != View.Tool.MOVE){
-                        double[] relativePosition = relativePosition(event.getX() + xShift, event.getY() + yShift);
+                        double[] relativePosition = relativePosition(event.getX(), event.getY());
                         clickX = relativePosition[0];
                         clickY = relativePosition[1];
                     }
@@ -88,7 +108,7 @@ public class CircuitControl{
         final EventHandler<MouseEvent> dragged = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 if (withinBounds(event.getX(), event.getY()) && (View.getTool() != View.Tool.MOVE) ) {
-                    drawOverlayComponent(event.getX() + xShift, event.getY() + yShift);
+                    drawOverlayComponent(event.getX(), event.getY());
                 }
             }
         };
@@ -104,18 +124,15 @@ public class CircuitControl{
         final EventHandler<MouseEvent> dragToMove = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 if(View.getTool() == View.Tool.MOVE){
-                    double height = View.getRoot().getHeight();
-                    double width = View.getRoot().getWidth();
-
                     if(event.getX() > orginalMouseX){
-                        xShift += (Math.abs(orginalMouseX - event.getX())) * 0.4;
-                    }else{
                         xShift -= (Math.abs(orginalMouseX - event.getX())) * 0.4;
+                    }else{
+                        xShift += (Math.abs(orginalMouseX - event.getX())) * 0.4;
                     }
                     if(event.getY() > orginalMouseY){
-                        yShift += (Math.abs(orginalMouseY - event.getY())) * 0.4;
-                    }else{
                         yShift -= (Math.abs(orginalMouseY - event.getY())) * 0.4;
+                    }else{
+                        yShift += (Math.abs(orginalMouseY - event.getY())) * 0.4;
                     }
 
                     orginalMouseX = event.getX();
@@ -129,27 +146,12 @@ public class CircuitControl{
         };
 
         circuit.addEventHandler(MouseEvent.MOUSE_MOVED, mouseMoved);
+        circuit.addEventHandler(MouseEvent.MOUSE_ENTERED, mouseEntered);
         circuit.addEventHandler(MouseEvent.MOUSE_EXITED, mouseExited);
         circuit.addEventHandler(MouseEvent.MOUSE_PRESSED, mousePressed);
         circuit.addEventHandler(MouseEvent.MOUSE_DRAGGED, dragged);
         circuit.addEventHandler(MouseEvent.MOUSE_DRAGGED, dragToMove);
         circuit.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleased);
-    }
-
-    public double getXShift(){
-        return xShift;
-    }
-
-    public double getYShift(){
-        return yShift;
-    }
-
-    public void resetXShift(){
-        xShift = 0;
-    }
-
-    public void resetYShift(){
-        yShift = 0;
     }
 
     void drawCircuitBackground() {
@@ -160,8 +162,8 @@ public class CircuitControl{
         double dotSpacing = (width / height) * 8 * scale;
         
         circuitBackgroundGraphics.setFill(Color.BLUE);
-        for (double x = dotSpacing; x <= ((width * 0.85) - dotSpacing); x += dotSpacing) {
-            for (double y = dotSpacing; y <= ((height * 0.95) - dotSpacing); y += dotSpacing) {
+        for (double x = 0; x <= (width * 0.85); x += dotSpacing) {
+            for (double y = 0; y <= (height * 0.95); y += dotSpacing) {
                 circuitBackgroundGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
                 numYDots++;
             }
@@ -172,6 +174,8 @@ public class CircuitControl{
 
         numDots[0] = numXDots;
         numDots[1] = numYDots;
+
+        backgroundBounds.setValues(dotSpacing, dotSpacing, (width * 0.85), (height * 0.95));
     }
 
     void shiftBackground() {
@@ -180,25 +184,53 @@ public class CircuitControl{
         double height = View.getRoot().getHeight();
         double width = View.getRoot().getWidth();
         double dotSpacing = (width / height) * 8 * scale;
+        
+        double xStart = 0;
+        double xEnd = width * 0.85;
+        double yStart = 0;
+        double yEnd = height * 0.95;
+        
+        double xClipped = Math.abs(xShift) % dotSpacing;
+        double yClipped = Math.abs(yShift) % dotSpacing;
 
-        double xStart = dotSpacing - Math.abs(xShift);
-        double yStart = dotSpacing - Math.abs(yShift);
-        double xEnd = ((width * 0.85) - dotSpacing) + Math.abs(xShift);
-        double yEnd = ((height * 0.95) - dotSpacing) + Math.abs(yShift);
+        if(xShift < 0){
+            xStart += xClipped;
+            xEnd -= xClipped;
+        }else{
+            xStart -= xClipped;
+            xEnd += xClipped;
+        }
+
+        if(yShift < 0){
+            yStart += yClipped;
+            yEnd -= yClipped;
+        }else{
+            yStart -= yClipped;
+            yEnd += yClipped;
+        }
 
         circuitBackgroundGraphics.setFill(Color.BLUE);
         for (double x = xStart; x <= xEnd; x += dotSpacing) {
             for (double y = yStart; y <= yEnd; y += dotSpacing) {
                 circuitBackgroundGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
-                numYDots++;
+                if( (y >= 0) && (y <= (height * 0.95)) ){ 
+                    numYDots++;
+                }
             }
-            numXDots++;
+            if( (x >= 0) && (x <= (width * 0.85)) ){ 
+                numXDots++;
+            }
         }
 
         numYDots /= numXDots;
 
         numDots[0] = numXDots;
         numDots[1] = numYDots;
+
+        backgroundShift = new Coordinate(dotSpacing - xStart, dotSpacing - yStart, (width * 0.85) - xEnd, 
+            (height * 0.95) - yEnd);
+
+        backgroundBounds.setValues(xStart, yStart, xEnd, yEnd);
     }
 
     void circuitHover(double x, double y) {
@@ -213,38 +245,22 @@ public class CircuitControl{
         overlayCircuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
     }
 
-    void clearOverlay() {
-        overlayCircuitGraphics.clearRect(0, 0, overlayCircuit.getWidth(), overlayCircuit.getHeight());
-    }
-
-    public void clearCircuit() {
-        circuitGraphics.clearRect(0, 0, circuit.getWidth(), circuit.getHeight());
-        circuitBackgroundGraphics.clearRect(0, 0, circuitBackground.getWidth(), circuitBackground.getHeight());
-    }
-
-    public void resizeCircuit() {
-        double height = View.getRoot().getHeight();
-        double width = View.getRoot().getWidth();
-        circuit.setHeight(height * 0.95);
-        circuit.setWidth(width * 0.85);
-        overlayCircuit.setHeight(height * 0.95);
-        overlayCircuit.setWidth(width * 0.85);
-    }
-
     public double[] relativePosition(double x, double y){
-        
-        double height = View.getRoot().getHeight();
         double width = View.getRoot().getWidth();
+        double height = View.getRoot().getHeight();
         double dotSpacing = (width / height) * 8 * scale;
+        Bounds canvasBounds = circuitBackground.getBoundsInParent();
 
-        Bounds canvasBounds = circuit.getBoundsInParent();
         double relativeXPostion = x / canvasBounds.getWidth();
-        double relativeYPostion = y / canvasBounds.getHeight();
+        double relativeYPostion = y  / canvasBounds.getHeight();
         
-        int numDotX = (int) (relativeXPostion * numDots[0] + 1);
-        int numDotY = (int) (relativeYPostion * numDots[1] + 1);
+        int numDotX = (int) (relativeXPostion * numDots[0] + 0.5);// + 1);
+        int numDotY = (int) (relativeYPostion * numDots[1] + 0.5);// + 1);
 
-        double[] relativePosition = {(dotSpacing * numDotX), (dotSpacing * numDotY)};
+        relativeXPostion = (dotSpacing * numDotX) - backgroundShift.startX;
+        relativeYPostion = (dotSpacing * numDotY) - backgroundShift.startY;
+
+        double[] relativePosition = {relativeXPostion, relativeYPostion};
         return relativePosition;
     }
 
@@ -267,10 +283,14 @@ public class CircuitControl{
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
         
-        double xStart = (coordinate.startX * width) + xShift;
-        double yStart = (coordinate.startY * height) + yShift;
-        double xEnd = (coordinate.endX * width) + xShift;
-        double yEnd = (coordinate.endY * height) + yShift; 
+        double xStart = (coordinate.startX * width) - (xShift);// * scale);
+        double yStart = (coordinate.startY * height) - (yShift);// * scale);
+        double xEnd = (coordinate.endX * width) - (xShift);// * scale);
+        double yEnd = (coordinate.endY * height) - (yShift);// * scale);
+
+        //double[] start = relativePosition(xStart, yStart);
+        //double[] end = relativePosition(xEnd, yEnd);
+        //circuitGraphics.strokeLine(start[0], start[1], end[0], end[1]);
 
         circuitGraphics.strokeLine(xStart, yStart, xEnd, yEnd);
     }
@@ -319,8 +339,11 @@ public class CircuitControl{
             }
         }else if(View.getTool() == View.Tool.WIRE){
             circuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
-            Coordinate coordinate = new Coordinate(clickX / circuit.getWidth(), clickY / circuit.getHeight(), 
-                    componentEndX / circuit.getWidth(), componentEndY / circuit.getHeight());
+            double startX = ((clickX + xShift) / circuit.getWidth()) / scale;
+            double startY = ((clickY + yShift) / circuit.getHeight()) / scale;
+            double endX = ((componentEndX + xShift) / circuit.getWidth()) / scale;
+            double endY = ((componentEndY + yShift) / circuit.getHeight()) / scale;
+            Coordinate coordinate = new Coordinate(startX, startY, endX, endY);
             model.write(coordinate);
         }
     }
@@ -410,6 +433,30 @@ public class CircuitControl{
         return true;
     }
 
+    public void resizeCircuit() {
+        double height = View.getRoot().getHeight();
+        double width = View.getRoot().getWidth();
+        circuit.setHeight(height * 0.95);
+        circuit.setWidth(width * 0.85);
+        overlayCircuit.setHeight(height * 0.95);
+        overlayCircuit.setWidth(width * 0.85);
+    }
+
+    public void zoom(){
+        clearCircuit();
+        shiftBackground();
+        model.drawFromFile();
+    }
+
+    void clearOverlay() {
+        overlayCircuitGraphics.clearRect(0, 0, overlayCircuit.getWidth(), overlayCircuit.getHeight());
+    }
+
+    public void clearCircuit() {
+        circuitGraphics.clearRect(0, 0, circuit.getWidth(), circuit.getHeight());
+        circuitBackgroundGraphics.clearRect(0, 0, circuitBackground.getWidth(), circuitBackground.getHeight());
+    }
+
     public double getScale(){
         return scale;
     }
@@ -422,9 +469,19 @@ public class CircuitControl{
         return circuit;
     }
 
-    public void zoom(){
-        clearCircuit();
-        drawCircuitBackground();
-        model.drawFromFile();
+    public double getXShift(){
+        return xShift;
+    }
+
+    public double getYShift(){
+        return yShift;
+    }
+
+    public void resetXShift(){
+        xShift = 0;
+    }
+
+    public void resetYShift(){
+        yShift = 0;
     }
 }

@@ -31,16 +31,19 @@ public class Coordinate {
         return endY;
     }
 
-    public Coordinate scale(double scale){
-        double width = View.getRoot().getWidth();
-        double height = View.getRoot().getHeight();
-        double xShift = View.getCircuitControl().getXShift();
-        double yShift = View.getCircuitControl().getYShift();
+    public void setValues(double newStartX, double newStartY, double newEndX, double newEndY){
+        startX = newStartX;
+        startY = newStartY;
+        endX = newEndX;
+        endY = newEndY;
+    }
 
-        double scaledStartX = (startX * scale);// + (xShift / width);
-        double scaledStartY = (startY * scale);// + (yShift / height);
-        double scaledEndX = (endX * scale);// + (xShift / width);
-        double scaledEndY = (endY * scale);// + (yShift / height);
+    public Coordinate scale(double scale){
+
+        double scaledStartX = (startX * scale);
+        double scaledStartY = (startY * scale);
+        double scaledEndX = (endX * scale);
+        double scaledEndY = (endY * scale);
         
         return (new Coordinate(scaledStartX, scaledStartY, scaledEndX, scaledEndY));
     }
