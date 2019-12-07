@@ -62,9 +62,7 @@ public class CircuitControl{
             public void handle(MouseEvent event) {
                 if ( (View.getRoot().getChildren().contains(circuit)) && (View.getTool() != View.Tool.MOVE) ) {
                     circuitHover(event.getX(), event.getY());
-                }/*else{
-                    clearOverlay();
-                }*/
+                }
             }
         };
 
@@ -283,14 +281,10 @@ public class CircuitControl{
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
         
-        double xStart = (coordinate.startX * width) - (xShift);// * scale);
-        double yStart = (coordinate.startY * height) - (yShift);// * scale);
-        double xEnd = (coordinate.endX * width) - (xShift);// * scale);
-        double yEnd = (coordinate.endY * height) - (yShift);// * scale);
-
-        //double[] start = relativePosition(xStart, yStart);
-        //double[] end = relativePosition(xEnd, yEnd);
-        //circuitGraphics.strokeLine(start[0], start[1], end[0], end[1]);
+        double xStart = (coordinate.startX * width) - (xShift);
+        double yStart = (coordinate.startY * height) - (yShift);
+        double xEnd = (coordinate.endX * width) - (xShift);
+        double yEnd = (coordinate.endY * height) - (yShift);
 
         circuitGraphics.strokeLine(xStart, yStart, xEnd, yEnd);
     }
