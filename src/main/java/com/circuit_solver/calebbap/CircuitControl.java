@@ -353,8 +353,6 @@ public class CircuitControl{
         double middleY = Math.abs(clickY + componentEndY) / 2;
 
         double componentRadius = Component.getRadius();
-
-        System.out.println("Component Radius: " + (Double.toString(componentRadius)));
         
         if(clickX == componentEndX){
             lowerEnd.startX = lowerEnd.endX = higherEnd.startX = higherEnd.endX = clickX;

@@ -8,7 +8,6 @@ public final class Resistor extends Component {
 
     public Resistor(Coordinate newCoordinate, double newAngle, double newResistance) {
         super(newCoordinate, newAngle);
-
         resistance = newResistance;
     }
     
@@ -16,14 +15,25 @@ public final class Resistor extends Component {
     public Coordinate[] drawComponent(){
         Coordinate[] drawing;
         double dotSpacing = CircuitControl.getDotSpacing();
+        double adjustedAngle = (Math.PI / 2) - angle;
 
         double startX = componentEnds.getStartX();
         double startY = componentEnds.getStartY();
-        double endX = componentEnds.getStartX() + (dotSpacing / 2);
-        double endY = componentEnds.getStartY() - dotSpacing;
+        double endX = componentEnds.getStartX();
+        double endY = componentEnds.getStartY();
+
+        if( (componentEnds.getStartX() < componentEnds.getEndX()) && (componentEnds.getEndY() < componentEnds.getStartY()) ||
+            componentEnds.getStartY() == componentEnds.getEndY()){
+            endY += (dotSpacing * Math.sin(adjustedAngle)) -  ((dotSpacing / 2) * Math.cos(adjustedAngle));
+        }else{
+            endY -= ((dotSpacing * Math.sin(adjustedAngle)) - ((dotSpacing / 2) * Math.cos(adjustedAngle)));
+        }
+
+        endX += ((dotSpacing / 2) * Math.sin(adjustedAngle)) + (dotSpacing * Math.cos(adjustedAngle));
+
 
         Coordinate c0 = new Coordinate(startX, startY, endX, endY);
-        startX = endX;
+        /*startX = endX;
         startY = endY;
         endX += dotSpacing / 2;
         endY += dotSpacing * 2;
@@ -57,10 +67,9 @@ public final class Resistor extends Component {
         startY = endY;
         endX = componentEnds.getEndX();
         endY = componentEnds.getEndY();
-        Coordinate c7 = new Coordinate(startX, startY, endX, endY);
+        Coordinate c7 = new Coordinate(startX, startY, endX, endY);*/
 
-        drawing = new Coordinate[] {c0, c1, c2, c3, c4, c5, c6, c7};
-        //drawing = new Coordinate[] {};
+    drawing = new Coordinate[] {c0/*, c1, c2, c3, c4, c5, c6, c7*/};
         return drawing;
     }
 
