@@ -13,63 +13,62 @@ public final class Resistor extends Component {
     
     @Override
     public Coordinate[] drawComponent(){
-        Coordinate[] drawing;
+        Coordinate[] drawing = new Coordinate[8];
         double dotSpacing = CircuitControl.getDotSpacing();
         double adjustedAngle = (Math.PI / 2) - angle;
 
-        double startX = componentEnds.getStartX();
-        double startY = componentEnds.getStartY();
-        double endX = componentEnds.getStartX();
-        double endY = componentEnds.getStartY();
+        double startX, endX;
+        startX = endX = componentEnds.getStartX();
+        double startY, endY;
+        startY = endY = componentEnds.getStartY();
 
-        if( (componentEnds.getStartX() < componentEnds.getEndX()) && (componentEnds.getEndY() < componentEnds.getStartY()) ||
-            componentEnds.getStartY() == componentEnds.getEndY()){
-            endY += (dotSpacing * Math.sin(adjustedAngle)) -  ((dotSpacing / 2) * Math.cos(adjustedAngle));
+        if(quadrant == Quadrant.A){
+            //endY -= (dotSpacing * Math.sin(adjustedAngle)) - ((dotSpacing / 2) * Math.cos(adjustedAngle));
+            //endX -= ((dotSpacing / 2) * Math.sin(adjustedAngle)) + (dotSpacing * Math.cos(adjustedAngle));
+            endY -= ( ((dotSpacing / 2) * Math.cos(adjustedAngle)) + (dotSpacing * Math.sin(adjustedAngle)) );
+            endX -= ( (dotSpacing * Math.cos(adjustedAngle)) - ((dotSpacing / 2) * Math.sin(adjustedAngle)) );
         }else{
             endY -= ((dotSpacing * Math.sin(adjustedAngle)) - ((dotSpacing / 2) * Math.cos(adjustedAngle)));
+            endX += ((dotSpacing / 2) * Math.sin(adjustedAngle)) + (dotSpacing * Math.cos(adjustedAngle));
+        }
+        drawing[0] = new Coordinate(startX, startY, endX, endY);
+
+        for(int i = 1; i < (drawing.length - 1); i++){
+            startX = endX;
+            startY = endY;
+
+            if(i % 2 != 0){
+                if(quadrant == Quadrant.A){
+                    //endY -= ( ((dotSpacing * 2) * Math.sin(adjustedAngle)) + ((dotSpacing / 2) * Math.cos(adjustedAngle)) );
+                    endY += ( ((dotSpacing * 2) * Math.sin(adjustedAngle)) - ((dotSpacing / 2) * Math.cos(adjustedAngle)) );
+                    endX += ( ((dotSpacing * 2) * Math.cos(adjustedAngle)) + ((dotSpacing / 2) * Math.sin(adjustedAngle)) );
+                }else{
+                    endY += ((dotSpacing * 2) * Math.sin(adjustedAngle)) + ((dotSpacing / 2) * Math.cos(adjustedAngle));
+                    endX -= ( ((dotSpacing * 2) * Math.cos(adjustedAngle)) - ((dotSpacing / 2) * Math.sin(adjustedAngle)) );
+                }
+            }else{
+                if(quadrant == Quadrant.A){
+                    endY -= ( ((dotSpacing * 2) * Math.sin(adjustedAngle)) + ((dotSpacing / 2) * Math.cos(adjustedAngle)) );
+                    endX -= ( ((dotSpacing * 2) * Math.cos(adjustedAngle)) - ((dotSpacing / 2) * Math.sin(adjustedAngle)) );
+                }else{
+                    endY -= ( ((dotSpacing * 2) * Math.sin(adjustedAngle)) - ((dotSpacing / 2) * Math.cos(adjustedAngle)) );
+                    endX += ( ((dotSpacing / 2) * Math.sin(adjustedAngle)) + ( (dotSpacing * 2) * Math.cos(adjustedAngle)) );
+                }
+            }
+            drawing[i] = new Coordinate(startX, startY, endX, endY);
         }
 
-        endX += ((dotSpacing / 2) * Math.sin(adjustedAngle)) + (dotSpacing * Math.cos(adjustedAngle));
+        startX = endX;
+        startY = endY;
+        if(quadrant == Quadrant.A){
+            endY += ( (dotSpacing * Math.sin(adjustedAngle)) - ((dotSpacing / 2) * Math.cos(adjustedAngle)) );
+            endX += ( (dotSpacing * Math.cos(adjustedAngle)) + ((dotSpacing / 2) * Math.sin(adjustedAngle)) );
+        }else{
+            endY += ((dotSpacing / 2) * Math.cos(adjustedAngle)) + (dotSpacing * Math.sin(adjustedAngle));
+            endX -= ( (dotSpacing * Math.cos(adjustedAngle)) - ((dotSpacing / 2) * Math.sin(adjustedAngle)) );
+        }
+        drawing[7] = new Coordinate(startX, startY, endX, endY);
 
-
-        Coordinate c0 = new Coordinate(startX, startY, endX, endY);
-        /*startX = endX;
-        startY = endY;
-        endX += dotSpacing / 2;
-        endY += dotSpacing * 2;
-        Coordinate c1 = new Coordinate(startX, startY, endX, endY);
-        startX = endX;
-        startY = endY;
-        endX += dotSpacing / 2;
-        endY -= dotSpacing * 2;
-        Coordinate c2 = new Coordinate(startX, startY, endX, endY);
-        startX = endX;
-        startY = endY;
-        endX += dotSpacing / 2;
-        endY += dotSpacing * 2;
-        Coordinate c3 = new Coordinate(startX, startY, endX, endY);
-        startX = endX;
-        startY = endY;
-        endX += dotSpacing / 2;
-        endY -= dotSpacing * 2;
-        Coordinate c4 = new Coordinate(startX, startY, endX, endY);
-        startX = endX;
-        startY = endY;
-        endX += dotSpacing / 2;
-        endY += dotSpacing * 2;
-        Coordinate c5 = new Coordinate(startX, startY, endX, endY);
-        startX = endX;
-        startY = endY;
-        endX += dotSpacing / 2;
-        endY -= dotSpacing * 2;
-        Coordinate c6 = new Coordinate(startX, startY, endX, endY);
-        startX = endX;
-        startY = endY;
-        endX = componentEnds.getEndX();
-        endY = componentEnds.getEndY();
-        Coordinate c7 = new Coordinate(startX, startY, endX, endY);*/
-
-    drawing = new Coordinate[] {c0/*, c1, c2, c3, c4, c5, c6, c7*/};
         return drawing;
     }
 
