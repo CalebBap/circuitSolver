@@ -2,8 +2,9 @@ package com.circuit_solver.calebbap;
 
 import java.io.Serializable;
 
-public class Component implements Serializable{
+public abstract class Component implements Serializable{
     protected Coordinate componentEnds;
+    protected Coordinate relativePosition;
     protected double angle;
     protected static double radius;
     protected boolean quadrantNE_SW;
@@ -31,7 +32,13 @@ public class Component implements Serializable{
         radius = newRadius;
     }
 
-    public Coordinate[] drawComponent(){
-        return null;
+    public abstract Coordinate[] drawComponent();
+
+    public void setRelativePosition(Coordinate coordinate){
+        relativePosition = coordinate;
+    }
+
+    public Coordinate getRelativePosition(){
+        return relativePosition;
     }
 }

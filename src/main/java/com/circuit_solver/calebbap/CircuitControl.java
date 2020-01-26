@@ -1,5 +1,7 @@
 package com.circuit_solver.calebbap;
 
+import java.util.ArrayList;
+
 import com.circuit_solver.calebbap.components.*;
 
 import javafx.event.EventHandler;
@@ -42,8 +44,6 @@ public class CircuitControl{
     private static double dotSpacing;
 
     private Model model;
-
-    private Component component = null;
 
     CircuitControl(Canvas newCircuit, GraphicsContext newCircuitGraphics, Canvas newOverlayCircuit,
             GraphicsContext newOverlayCircuitGraphics, Canvas newCircuitBackground, GraphicsContext newCircuitBackgroundGraphics, 
@@ -274,29 +274,37 @@ public class CircuitControl{
         overlayCircuitGraphics.strokeLine(clickX, clickY + 1, componentEndX, componentEndY + 1);
     }
 
-    // Update with gap between wires for component?
-    void drawComponent(Coordinate coordinate){
+    void drawComponent(Component component){
+        circuitGraphics.setStroke(Color.BLACK);
+        circuitGraphics.setLineWidth(4);
         double width = circuitBackground.getWidth();
         double height = circuitBackground.getHeight();
 
-        circuitGraphics.setStroke(Color.BLACK);
-        circuitGraphics.setLineWidth(4);
-        
+        Coordinate[] drawing = component.drawComponent();
+        for(int x = 0; x < drawing.length; x++){
+            circuitGraphics.strokeLine(drawing[x].startX, drawing[x].startY, drawing[x].endX, drawing[x].endY);  
+        }
+
+        Coordinate coordinate = component.getRelativePosition();
+
         double xStart = (coordinate.startX * width) - (xShift);
         double yStart = (coordinate.startY * height) - (yShift);
         double xEnd = (coordinate.endX * width) - (xShift);
         double yEnd = (coordinate.endY * height) - (yShift);
 
-        circuitGraphics.strokeLine(xStart, yStart, xEnd, yEnd);
+        circuitGraphics.strokeLine(xStart, yStart, drawing[0].startX, drawing[0].startY);
+        circuitGraphics.strokeLine(drawing[drawing.length - 1].endX, drawing[drawing.length - 1].endY, xEnd, yEnd);
     }
 
     void drawComponent(){
         clearOverlay();
+        Component component = null;
 
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
 
-        if(View.getTool() != View.Tool.WIRE){
+        //if(View.getTool() != View.Tool.WIRE){
+
             double angle = Math.atan( Math.abs(clickY - componentEndY) / Math.abs(clickX - componentEndX) );
 
             Coordinate[] endCoordinates = drawComponentEnds(angle);
@@ -331,18 +339,20 @@ public class CircuitControl{
                 
                 Coordinate coordinate = new Coordinate(clickX / circuit.getWidth(), clickY / circuit.getHeight(), 
                     componentEndX / circuit.getWidth(), componentEndY / circuit.getHeight());
-                model.write(coordinate);
-
+                
+                component.setRelativePosition(coordinate);
+                model.addCircuitComponent(component);
             }
-        }else if(View.getTool() == View.Tool.WIRE){
+        /*}else if(View.getTool() == View.Tool.WIRE){
             circuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
             double startX = ((clickX + xShift) / circuit.getWidth()) / scale;
             double startY = ((clickY + yShift) / circuit.getHeight()) / scale;
             double endX = ((componentEndX + xShift) / circuit.getWidth()) / scale;
             double endY = ((componentEndY + yShift) / circuit.getHeight()) / scale;
             Coordinate coordinate = new Coordinate(startX, startY, endX, endY);
-            model.write(coordinate);
-        }
+            component.setRelativePosition(coordinate);
+            model.addCircuitComponent(component);
+        }*/
     }
 
     Coordinate[] drawComponentEnds(double angle){

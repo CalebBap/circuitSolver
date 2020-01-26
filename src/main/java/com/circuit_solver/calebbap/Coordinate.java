@@ -1,6 +1,8 @@
 package com.circuit_solver.calebbap;
 
-public class Coordinate {
+import java.io.Serializable;
+
+public class Coordinate implements Serializable {
     double startX;
     double startY;
     double endX;

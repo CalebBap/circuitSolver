@@ -1,9 +1,10 @@
 package com.circuit_solver.calebbap.components;
 
+import com.circuit_solver.calebbap.CircuitControl;
 import com.circuit_solver.calebbap.Component;
-import com.circuit_solver.calebbap.*;
+import com.circuit_solver.calebbap.Coordinate;
 
-public final class Resistor extends Component {
+public final class Resistor extends Component{
     private double resistance;
 
     public Resistor(Coordinate newCoordinate, double newAngle, double newResistance) {
@@ -75,6 +76,5 @@ public final class Resistor extends Component {
 
     public double getResistance(){
         return resistance;
-    }
-
+    }    
 }

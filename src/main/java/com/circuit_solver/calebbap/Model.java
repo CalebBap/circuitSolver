@@ -1,112 +1,125 @@
 package com.circuit_solver.calebbap;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 
 public class Model{
-    private File file;
-    private PrintWriter writer = null;
-    private Scanner reader;
+    private static File file;
 
-    Boolean init(Boolean newCircuit){
+    private static FileOutputStream fileOut;
+    private static ObjectOutputStream out;
+
+    FileInputStream fileIn;
+    ObjectInputStream in;
+
+    ArrayList<Component> circuitComponents = new ArrayList<>(); 
+
+    Boolean init(Boolean newCircuit) {
+        if(circuitComponents.size() > 0){
+            write();
+        }
+
         FileChooser fileChooser = new FileChooser();
         File initialDirectory = new File(System.getProperty("user.home") + File.separator);
-        
+
         fileChooser.getExtensionFilters().add(new ExtensionFilter("Circuit", "*.crc"));
         fileChooser.setInitialDirectory(initialDirectory);
-        
-        if(newCircuit){
+
+        if (newCircuit) {
             fileChooser.setTitle("Save Circuit File");
             file = fileChooser.showSaveDialog(View.getStage());
-        }else{
+        } else {
             fileChooser.setTitle("Open Circuit File");
             file = fileChooser.showOpenDialog(View.getStage());
         }
 
-        if(file == null){
-            return false; 
+        if (file == null) {
+            return false;
         }
 
-        if(newCircuit){
-            try{
-                writer = new PrintWriter(file);
-            }catch(FileNotFoundException e){
+        if (newCircuit) {
+            try {
+                fileOut = new FileOutputStream(file);
+                out = new ObjectOutputStream(fileOut);
+            } catch (Exception e) {
                 return false;
             }
-        }else{
-            try{
-                writer = new PrintWriter(new FileWriter(file, true));
-            }catch(Exception e){
+        } else {
+            read();
+            try {
+                fileOut = new FileOutputStream(file, true);
+                out = new ObjectOutputStream(fileOut);
+            } catch (Exception e) {
                 return false;
             }
         }
-        
+
         View.getStage().setTitle("Circuit Solver - " + file.getName());
 
         return true;
     }
 
-    void write(Coordinate coordinate){
-        writer.println(Double.toString(coordinate.startX) + " " + Double.toString(coordinate.startY) + " " + 
-            Double.toString(coordinate.endX) + " " +  Double.toString(coordinate.endY));
-        writer.flush();
-    }
-
-    ArrayList<Coordinate> read(){
-
-        ArrayList<Coordinate> valueList = new ArrayList<Coordinate>();
-
+    void write() {
         try{
-            reader = new Scanner(file);
-        }catch(FileNotFoundException e){
-            return valueList;
-        }
-
-        double[] values = {0, 0, 0, 0};
-        int index = 0;
-        Coordinate coordinates;
-
-        while(reader.hasNext()){
-            values[index] = Double.parseDouble(reader.next());
-            if(index == 3){
-                index = 0;
-                coordinates = new Coordinate(values[0], values[1], values[2], values[3]);
-                valueList.add(coordinates);
-            }else{
-                index++;
-            }
-        }
-
-        return valueList;
-    }
-
-    void drawFromFile(){
-        ArrayList<Coordinate> coordinates = read();
-        for(int i = 0; i < coordinates.size(); i++){
-            double scale = View.getCircuitControl().getScale();
-            Coordinate coordinate = coordinates.get(i).scale(scale);
-            View.getCircuitControl().drawComponent(coordinate);
+            out.writeObject(circuitComponents);
+        }catch(Exception e){
+            e.printStackTrace();
         }
     }
 
-    void undo(){
+    void read(){
+        try {
+            fileIn = new FileInputStream(file);
+            in = new ObjectInputStream(fileIn);
+            circuitComponents = (ArrayList<Component>) in.readObject();
+            in.close();
+            fileIn.close();
+        } catch (Exception i) {
+            i.printStackTrace();
+        }
+    }
+
+    void drawFromFile() {
+        for(Component component : circuitComponents){
+            View.getCircuitControl().drawComponent(component);
+        }
+    }
+
+    public void addCircuitComponent(Component newComponent){
+        circuitComponents.add(newComponent);
+    }
+
+    void undo() {
         // Perhaps save these to a temp file for redo()?
     }
 
-    void redo(){
+    void redo() {}
 
+    void closeFile() {
+        try{
+            if(fileOut != null){
+                fileOut.close();
+            }
+            if(out != null){
+                out.close();
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
-    void closeFile(){
-        if(writer != null){
-            writer.close();
-        }
+    public static File getFile() {
+        return file;
+    }
+
+    public static ObjectOutputStream getObjOutStream(){
+        return out;
     }
 }

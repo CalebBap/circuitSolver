@@ -1,8 +1,9 @@
 package com.circuit_solver.calebbap.components;
 
-import com.circuit_solver.calebbap.*;
+import com.circuit_solver.calebbap.Component;
+import com.circuit_solver.calebbap.Coordinate;
 
-public final class Wire extends Component {
+public final class Wire extends Component{
 
     public Wire(Coordinate newCoordinate, double newAngle) {
         super(newCoordinate, newAngle);
@@ -18,6 +19,5 @@ public final class Wire extends Component {
         drawing = new Coordinate[] {c0};
         return drawing;
     }
-
 }
 

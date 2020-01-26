@@ -145,9 +145,7 @@ public class View extends Application {
         overlayCircuit = new Canvas(frameWidth * 0.85, frameHeight * 0.95);
         overlayCircuitGraphics = overlayCircuit.getGraphicsContext2D();
 
-
         model = new Model();
-
 
         Hyperlink newLink = new Hyperlink("new");
         newLink.setOnAction(new EventHandler<ActionEvent>() {
