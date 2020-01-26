@@ -22,9 +22,7 @@ public final class Resistor extends Component {
         double startY, endY;
         startY = endY = componentEnds.getStartY();
 
-        if(quadrant == Quadrant.A){
-            //endY -= (dotSpacing * Math.sin(adjustedAngle)) - ((dotSpacing / 2) * Math.cos(adjustedAngle));
-            //endX -= ((dotSpacing / 2) * Math.sin(adjustedAngle)) + (dotSpacing * Math.cos(adjustedAngle));
+        if(quadrantNE_SW){
             endY -= ( ((dotSpacing / 2) * Math.cos(adjustedAngle)) + (dotSpacing * Math.sin(adjustedAngle)) );
             endX -= ( (dotSpacing * Math.cos(adjustedAngle)) - ((dotSpacing / 2) * Math.sin(adjustedAngle)) );
         }else{
@@ -38,8 +36,7 @@ public final class Resistor extends Component {
             startY = endY;
 
             if(i % 2 != 0){
-                if(quadrant == Quadrant.A){
-                    //endY -= ( ((dotSpacing * 2) * Math.sin(adjustedAngle)) + ((dotSpacing / 2) * Math.cos(adjustedAngle)) );
+                if(quadrantNE_SW){
                     endY += ( ((dotSpacing * 2) * Math.sin(adjustedAngle)) - ((dotSpacing / 2) * Math.cos(adjustedAngle)) );
                     endX += ( ((dotSpacing * 2) * Math.cos(adjustedAngle)) + ((dotSpacing / 2) * Math.sin(adjustedAngle)) );
                 }else{
@@ -47,7 +44,7 @@ public final class Resistor extends Component {
                     endX -= ( ((dotSpacing * 2) * Math.cos(adjustedAngle)) - ((dotSpacing / 2) * Math.sin(adjustedAngle)) );
                 }
             }else{
-                if(quadrant == Quadrant.A){
+                if(quadrantNE_SW){
                     endY -= ( ((dotSpacing * 2) * Math.sin(adjustedAngle)) + ((dotSpacing / 2) * Math.cos(adjustedAngle)) );
                     endX -= ( ((dotSpacing * 2) * Math.cos(adjustedAngle)) - ((dotSpacing / 2) * Math.sin(adjustedAngle)) );
                 }else{
@@ -60,7 +57,7 @@ public final class Resistor extends Component {
 
         startX = endX;
         startY = endY;
-        if(quadrant == Quadrant.A){
+        if(quadrantNE_SW){
             endY += ( (dotSpacing * Math.sin(adjustedAngle)) - ((dotSpacing / 2) * Math.cos(adjustedAngle)) );
             endX += ( (dotSpacing * Math.cos(adjustedAngle)) + ((dotSpacing / 2) * Math.sin(adjustedAngle)) );
         }else{
