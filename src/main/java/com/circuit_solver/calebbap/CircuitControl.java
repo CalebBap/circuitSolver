@@ -136,7 +136,6 @@ public class CircuitControl{
 
                     clearCircuit();
                     shiftBackground();
-                    //model.shiftAdjust();
                     model.drawFromFile();
                 }
             }
@@ -247,9 +246,9 @@ public class CircuitControl{
         double relativeXPostion = x / canvasBounds.getWidth();
         double relativeYPostion = y / canvasBounds.getHeight();
 
-        int numDotX = (int) (relativeXPostion * numDots[0] + 0.5);// + 1);
-        int numDotY = (int) (relativeYPostion * numDots[1] + 0.5);// + 1);
-
+        int numDotX = (int) (relativeXPostion * numDots[0] + 0.5);
+        int numDotY = (int) (relativeYPostion * numDots[1] + 0.5);
+        
         relativeXPostion = (dotSpacing * numDotX) - backgroundShift.startX;
         relativeYPostion = (dotSpacing * numDotY) - backgroundShift.startY;
 
@@ -342,9 +341,7 @@ public class CircuitControl{
 
             LineCoordinate coordinate = new LineCoordinate((clickX + xShift) / circuit.getWidth(), (clickY + yShift) / circuit.getHeight(),
                     (componentEndX + xShift) / circuit.getWidth(), (componentEndY + yShift) / circuit.getHeight());
-            
-            //component.applyShift();
-            //component.setRelativePosition(coordinate); // Shouldn't need this
+
             model.addCircuitComponent(component);
         }
     }

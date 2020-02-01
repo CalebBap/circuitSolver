@@ -98,7 +98,6 @@ public class Model{
 
     public void shiftAdjust(){
         for(Component component : circuitComponents){
-            //component.shiftComponentEnds(); // Shouldn't need this method
         }
     }
 

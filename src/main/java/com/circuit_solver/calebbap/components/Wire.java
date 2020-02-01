@@ -15,7 +15,6 @@ public final class Wire extends Component{
     @Override
     public LineCoordinate[] drawComponent(){
         LineCoordinate[] drawing;
-        
         double width = View.getRoot().getWidth() * CircuitControl.getScale();
         double height = View.getRoot().getHeight() * CircuitControl.getScale();
 
@@ -25,7 +24,6 @@ public final class Wire extends Component{
         double endY = relativeEndPosition.getStartY() * height;
 
         LineCoordinate c0 = new LineCoordinate(startX, startY, endX, endY);
-
         drawing = new LineCoordinate[] {c0};
         return drawing;
     }
