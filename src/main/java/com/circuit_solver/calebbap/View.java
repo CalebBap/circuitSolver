@@ -115,7 +115,7 @@ public class View extends Application {
         Button zoomIn = new Button("Zoom In");
         tools.add(zoomIn, 0, 1);
         zoomIn.setOnAction(a -> {
-            if( (circuitControl.getScale() < 5) && (root.getChildren().contains(circuit)) ){
+            if( (CircuitControl.getScale() < 5) && (root.getChildren().contains(circuit)) ){
                 circuitControl.setScale(1.2);
                 circuitControl.zoom();
             }
@@ -123,7 +123,7 @@ public class View extends Application {
         Button zoomOut = new Button("Zoom Out");
         tools.add(zoomOut, 1, 1);
         zoomOut.setOnAction(a -> {
-            if( (circuitControl.getScale() > 0.4) && (root.getChildren().contains(circuit)) ){
+            if( (CircuitControl.getScale() > 0.4) && (root.getChildren().contains(circuit)) ){
                 circuitControl.setScale(0.8);
                 circuitControl.zoom();
             }
@@ -214,7 +214,7 @@ public class View extends Application {
     void newCircuit() {
         if (model.init(true)) {
             if(circuitControl != null){
-                circuitControl.setScale(1 / circuitControl.getScale());
+                circuitControl.setScale(1 / CircuitControl.getScale());
                 circuitControl.resetXShift();
                 circuitControl.resetYShift();
             }
@@ -225,7 +225,7 @@ public class View extends Application {
     void openCircuit() {
         if (model.init(false)) {
             if(circuitControl != null){
-                circuitControl.setScale(1 / circuitControl.getScale());
+                circuitControl.setScale(1 / CircuitControl.getScale());
                 circuitControl.resetXShift();
                 circuitControl.resetYShift();
             }
