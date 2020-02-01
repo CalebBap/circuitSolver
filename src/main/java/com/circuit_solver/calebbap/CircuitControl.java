@@ -306,8 +306,6 @@ public class CircuitControl{
         circuitGraphics.setStroke(Color.BLACK);
         circuitGraphics.setLineWidth(4);
 
-        // if(View.getTool() != View.Tool.WIRE){
-
         double angle = Math.atan(Math.abs(clickY - componentEndY) / Math.abs(clickX - componentEndX));
 
         Coordinate[] endCoordinates = drawComponentEnds(angle);
@@ -321,7 +319,6 @@ public class CircuitControl{
             circuitGraphics.strokeLine(lowerEnd.startX, lowerEnd.startY, lowerEnd.endX, lowerEnd.endY);
             circuitGraphics.strokeLine(higherEnd.startX, higherEnd.startY, higherEnd.endX, higherEnd.endY);
 
-            // Make component using start and end coordinates of gap
             switch (View.getTool()) {
             case WIRE:
                 component = new Wire(new Coordinate(lowerEnd.endX, lowerEnd.endY, higherEnd.startX, higherEnd.startY), angle);
@@ -346,18 +343,6 @@ public class CircuitControl{
             component.setRelativePosition(coordinate);
             model.addCircuitComponent(component);
         }
-        /*
-         * }else if(View.getTool() == View.Tool.WIRE){
-            * circuitGraphics.strokeLine(clickX, clickY, componentEndX, componentEndY);
-            * double startX = ((clickX + xShift) / circuit.getWidth()) / scale; 
-            * double startY = ((clickY + yShift) / circuit.getHeight()) / scale; 
-            * double endX = ((componentEndX + xShift) / circuit.getWidth()) / scale; 
-            * double endY = ((componentEndY + yShift) / circuit.getHeight()) / scale; 
-            * Coordinate coordinate = new Coordinate(startX, startY, endX, endY);
-            * component.setRelativePosition(coordinate);
-            * model.addCircuitComponent(component); 
-         * }
-         */
     }
 
     Coordinate[] drawComponentEnds(double angle) {
