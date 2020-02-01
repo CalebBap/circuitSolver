@@ -96,6 +96,12 @@ public class Model{
         circuitComponents.add(newComponent);
     }
 
+    public void shiftAdjust(){
+        for(Component component : circuitComponents){
+            component.shiftComponentEnds();
+        }
+    }
+
     void undo() {
         // Perhaps save these to a temp file for redo()?
     }

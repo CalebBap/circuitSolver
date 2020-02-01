@@ -41,4 +41,18 @@ public abstract class Component implements Serializable{
     public Coordinate getRelativePosition(){
         return relativePosition;
     }
+
+    public void shiftComponentEnds(){
+        componentEnds.startX -= CircuitControl.getXShift();
+        componentEnds.startY -= CircuitControl.getYShift();
+        componentEnds.endX -= CircuitControl.getXShift();
+        componentEnds.endY -= CircuitControl.getYShift();
+    }
+
+    public void applyShift(){
+        componentEnds.startX += CircuitControl.getXShift();
+        componentEnds.startY += CircuitControl.getYShift();
+        componentEnds.endX += CircuitControl.getXShift();
+        componentEnds.endY += CircuitControl.getYShift();
+    }
 }

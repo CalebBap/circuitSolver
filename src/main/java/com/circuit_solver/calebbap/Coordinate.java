@@ -49,4 +49,13 @@ public class Coordinate implements Serializable {
         
         return (new Coordinate(scaledStartX, scaledStartY, scaledEndX, scaledEndY));
     }
+
+    public Coordinate applyShift(){
+        double shiftedStartX = startX + CircuitControl.getXShift();
+        double shiftedStartY = startY + CircuitControl.getYShift();
+        double shiftedEndX = endX + CircuitControl.getXShift();
+        double shiftedEndY = endY + CircuitControl.getYShift();
+     
+        return (new Coordinate(shiftedStartX, shiftedStartY, shiftedEndX, shiftedEndY));
+    }
 }
