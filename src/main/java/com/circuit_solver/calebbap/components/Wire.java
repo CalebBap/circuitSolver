@@ -16,13 +16,13 @@ public final class Wire extends Component{
     public LineCoordinate[] drawComponent(){
         LineCoordinate[] drawing;
         
-        double width = View.getRoot().getWidth();
-        double height = View.getRoot().getHeight();
+        double width = View.getRoot().getWidth() * CircuitControl.getScale();
+        double height = View.getRoot().getHeight() * CircuitControl.getScale();
 
         double startX = relativeStartPosition.getEndX() * width;
         double startY = relativeStartPosition.getEndY() * height;
-        double endX = startX + (2 * CircuitControl.getDotSpacing() * Math.cos(angle));
-        double endY = startY + (2 * CircuitControl.getDotSpacing() * Math.sin(angle));
+        double endX = relativeEndPosition.getStartX() * width;
+        double endY = relativeEndPosition.getStartY() * height;
 
         LineCoordinate c0 = new LineCoordinate(startX, startY, endX, endY);
 
