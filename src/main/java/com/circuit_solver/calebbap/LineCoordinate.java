@@ -2,15 +2,15 @@ package com.circuit_solver.calebbap;
 
 import java.io.Serializable;
 
-public class Coordinate implements Serializable {
+public class LineCoordinate implements Serializable {
     double startX;
     double startY;
     double endX;
     double endY;
 
-    public Coordinate(){ }
+    public LineCoordinate(){ }
 
-    public Coordinate(double newStartX, double newStartY, double newEndX, double newEndY){
+    public LineCoordinate(double newStartX, double newStartY, double newEndX, double newEndY){
         startX = newStartX;
         startY = newStartY;
         endX = newEndX;
@@ -40,22 +40,22 @@ public class Coordinate implements Serializable {
         endY = newEndY;
     }
 
-    public Coordinate scale(double scale){
+    public LineCoordinate scale(double scale){
 
         double scaledStartX = (startX * scale);
         double scaledStartY = (startY * scale);
         double scaledEndX = (endX * scale);
         double scaledEndY = (endY * scale);
         
-        return (new Coordinate(scaledStartX, scaledStartY, scaledEndX, scaledEndY));
+        return (new LineCoordinate(scaledStartX, scaledStartY, scaledEndX, scaledEndY));
     }
 
-    public Coordinate applyShift(){
+    public LineCoordinate applyShift(){
         double shiftedStartX = startX + CircuitControl.getXShift();
         double shiftedStartY = startY + CircuitControl.getYShift();
         double shiftedEndX = endX + CircuitControl.getXShift();
         double shiftedEndY = endY + CircuitControl.getYShift();
      
-        return (new Coordinate(shiftedStartX, shiftedStartY, shiftedEndX, shiftedEndY));
+        return (new LineCoordinate(shiftedStartX, shiftedStartY, shiftedEndX, shiftedEndY));
     }
 }
