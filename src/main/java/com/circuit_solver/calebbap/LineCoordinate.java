@@ -40,22 +40,23 @@ public class LineCoordinate implements Serializable {
         endY = newEndY;
     }
 
-    public LineCoordinate scale(double scale){
+    public void applyRelativePosition(){
+        double width = View.getRoot().getWidth() * CircuitControl.getScale();
+        double height = View.getRoot().getHeight() * CircuitControl.getScale();
 
-        double scaledStartX = (startX * scale);
-        double scaledStartY = (startY * scale);
-        double scaledEndX = (endX * scale);
-        double scaledEndY = (endY * scale);
-        
-        return (new LineCoordinate(scaledStartX, scaledStartY, scaledEndX, scaledEndY));
+        startX = startX + (CircuitControl.getXShift() / width);
+        startY = startY + (CircuitControl.getYShift() / height);
+        endX = endX + (CircuitControl.getXShift() / width);
+        endY = endY + (CircuitControl.getYShift() / height);
     }
 
-    public LineCoordinate applyShift(){
-        double shiftedStartX = startX + CircuitControl.getXShift();
-        double shiftedStartY = startY + CircuitControl.getYShift();
-        double shiftedEndX = endX + CircuitControl.getXShift();
-        double shiftedEndY = endY + CircuitControl.getYShift();
-     
-        return (new LineCoordinate(shiftedStartX, shiftedStartY, shiftedEndX, shiftedEndY));
+    public void applyAbsolutePosition(){
+        double width = View.getRoot().getWidth() * CircuitControl.getScale();
+        double height = View.getRoot().getHeight() * CircuitControl.getScale();
+
+        startX = startX - (CircuitControl.getXShift() / width);
+        startY = startY - (CircuitControl.getYShift() / height);
+        endX = endX - (CircuitControl.getXShift() / width);
+        endY = endY - (CircuitControl.getYShift() / height);
     }
 }

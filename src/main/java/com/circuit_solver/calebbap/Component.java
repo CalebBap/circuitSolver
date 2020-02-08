@@ -16,5 +16,10 @@ public abstract class Component implements Serializable{
         quadrantNE_SW = newQuadrant;
     }
 
+    public void adjustPosition(LineCoordinate newStartPosition, LineCoordinate newEndPosition){
+        relativeStartPosition = newStartPosition;
+        relativeEndPosition = newEndPosition;
+    }
+
     public abstract LineCoordinate[] drawComponent();
 }

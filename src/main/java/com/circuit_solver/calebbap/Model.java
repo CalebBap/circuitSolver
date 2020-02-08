@@ -22,10 +22,6 @@ public class Model{
     ArrayList<Component> circuitComponents = new ArrayList<>(); 
 
     Boolean init(Boolean newCircuit) {
-        if(circuitComponents.size() > 0){
-            write();
-        }
-
         FileChooser fileChooser = new FileChooser();
         File initialDirectory = new File(System.getProperty("user.home") + File.separator);
 
@@ -42,23 +38,21 @@ public class Model{
 
         if (file == null) {
             return false;
+        }else{  
+            if(circuitComponents.size() > 0){
+                closeFile();
+            }
         }
 
-        if (newCircuit) {
-            try {
-                fileOut = new FileOutputStream(file);
-                out = new ObjectOutputStream(fileOut);
-            } catch (Exception e) {
-                return false;
-            }
-        } else {
+        if (!newCircuit) {
             read();
-            try {
-                fileOut = new FileOutputStream(file, true);
-                out = new ObjectOutputStream(fileOut);
-            } catch (Exception e) {
-                return false;
-            }
+        }
+            
+        try {
+            fileOut = new FileOutputStream(file);
+            out = new ObjectOutputStream(fileOut);
+        } catch (Exception e) {
+            return false;
         }
 
         View.getStage().setTitle("Circuit Solver - " + file.getName());
@@ -96,11 +90,6 @@ public class Model{
         circuitComponents.add(newComponent);
     }
 
-    public void shiftAdjust(){
-        for(Component component : circuitComponents){
-        }
-    }
-
     void undo() {
         // Perhaps save these to a temp file for redo()?
     }
@@ -108,6 +97,8 @@ public class Model{
     void redo() {}
 
     void closeFile() {
+        write();
+        circuitComponents.clear();
         try{
             if(fileOut != null){
                 fileOut.close();
@@ -120,11 +111,11 @@ public class Model{
         }
     }
 
-    public static File getFile() {
+    /*public static File getFile() {
         return file;
     }
 
     public static ObjectOutputStream getObjOutStream(){
         return out;
-    }
+    }*/
 }
