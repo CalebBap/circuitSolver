@@ -85,11 +85,13 @@ public class View extends Application {
         final Menu menuItem = new Menu("File");
         MenuItem menuFileNew = new MenuItem("New Circuit");
         menuFileNew.setOnAction(event -> {
-            newCircuit();
+            //newCircuit();
+            openCircuit(true);
         });
         MenuItem menuFileOpen = new MenuItem("Open Circuit");
         menuFileOpen.setOnAction(event -> {
-            openCircuit();
+            //openCircuit();
+            openCircuit(false);
         });
         menuItem.getItems().addAll(menuFileNew, menuFileOpen);
         menuBar.getMenus().add(menuItem);
@@ -150,18 +152,19 @@ public class View extends Application {
         Hyperlink newLink = new Hyperlink("new");
         newLink.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                newCircuit();
+                //newCircuit();
+                openCircuit(true);
             }
 
         });
         Hyperlink openLink = new Hyperlink("open");
         openLink.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                openCircuit();
+                //openCircuit();
+                openCircuit(false);
             }
 
         });
-
 
         noCircuit = new VBox();
         noCircuit.setAlignment(Pos.CENTER);
@@ -180,8 +183,7 @@ public class View extends Application {
         GridPane.setColumnIndex(noCircuit, 1);
         root.getChildren().addAll(menuBar, tools, noCircuit);
 
-        ChangeListener<Number> windowResizeListener = (observable, oldValue, newValue) -> 
-            windowResized();
+        ChangeListener<Number> windowResizeListener = (observable, oldValue, newValue) -> windowResized();
         root.widthProperty().addListener(windowResizeListener);
         root.heightProperty().addListener(windowResizeListener);
     }
@@ -211,7 +213,7 @@ public class View extends Application {
         }
     }
 
-    void newCircuit() {
+    /*void newCircuit() {
         if (model.init(true)) {
             if(circuitControl != null){
                 circuitControl.setScale(1 / CircuitControl.getScale());
@@ -232,6 +234,17 @@ public class View extends Application {
             initCircuit();
             model.drawFromFile();
         }
+    }*/
+
+    void openCircuit(Boolean newCircuit){
+        if( ((newCircuit && model.init(true)) || (!newCircuit && model.init(false))) && (circuitControl != null) ){
+            circuitControl.setScale(1 / CircuitControl.getScale());
+            circuitControl.resetXShift();
+            circuitControl.resetYShift();
+        }
+        initCircuit();
+        if(!newCircuit)
+            model.drawFromFile();
     }
 
     void windowResized() {

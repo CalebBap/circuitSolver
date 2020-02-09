@@ -38,15 +38,13 @@ public class Model{
 
         if (file == null) {
             return false;
-        }else{  
-            if(circuitComponents.size() > 0){
+        }//else{  
+            if(circuitComponents.size() > 0)
                 closeFile();
-            }
-        }
+        //}
 
-        if (!newCircuit) {
+        if (!newCircuit)
             read();
-        }
             
         try {
             fileOut = new FileOutputStream(file);
@@ -80,6 +78,21 @@ public class Model{
         }
     }
 
+    void closeFile() {
+        write();
+        circuitComponents.clear();
+        try{
+            if(fileOut != null)
+                fileOut.close();
+                
+            if(out != null)
+                out.close();
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     void drawFromFile() {
         for(Component component : circuitComponents){
             View.getCircuitControl().drawComponent(component);
@@ -90,32 +103,7 @@ public class Model{
         circuitComponents.add(newComponent);
     }
 
-    void undo() {
-        // Perhaps save these to a temp file for redo()?
-    }
+    void undo() {}
 
     void redo() {}
-
-    void closeFile() {
-        write();
-        circuitComponents.clear();
-        try{
-            if(fileOut != null){
-                fileOut.close();
-            }
-            if(out != null){
-                out.close();
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    /*public static File getFile() {
-        return file;
-    }
-
-    public static ObjectOutputStream getObjOutStream(){
-        return out;
-    }*/
 }
