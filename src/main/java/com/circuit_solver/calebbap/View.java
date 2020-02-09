@@ -85,12 +85,10 @@ public class View extends Application {
         final Menu menuItem = new Menu("File");
         MenuItem menuFileNew = new MenuItem("New Circuit");
         menuFileNew.setOnAction(event -> {
-            //newCircuit();
             openCircuit(true);
         });
         MenuItem menuFileOpen = new MenuItem("Open Circuit");
         menuFileOpen.setOnAction(event -> {
-            //openCircuit();
             openCircuit(false);
         });
         menuItem.getItems().addAll(menuFileNew, menuFileOpen);
@@ -152,7 +150,6 @@ public class View extends Application {
         Hyperlink newLink = new Hyperlink("new");
         newLink.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                //newCircuit();
                 openCircuit(true);
             }
 
@@ -160,7 +157,6 @@ public class View extends Application {
         Hyperlink openLink = new Hyperlink("open");
         openLink.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent event) {
-                //openCircuit();
                 openCircuit(false);
             }
 
@@ -212,29 +208,6 @@ public class View extends Application {
             circuitControl.shiftBackground();
         }
     }
-
-    /*void newCircuit() {
-        if (model.init(true)) {
-            if(circuitControl != null){
-                circuitControl.setScale(1 / CircuitControl.getScale());
-                circuitControl.resetXShift();
-                circuitControl.resetYShift();
-            }
-            initCircuit();
-        }
-    }
-
-    void openCircuit() {
-        if (model.init(false)) {
-            if(circuitControl != null){
-                circuitControl.setScale(1 / CircuitControl.getScale());
-                circuitControl.resetXShift();
-                circuitControl.resetYShift();
-            }
-            initCircuit();
-            model.drawFromFile();
-        }
-    }*/
 
     void openCircuit(Boolean newCircuit){
         if( ((newCircuit && model.init(true)) || (!newCircuit && model.init(false))) && (circuitControl != null) ){

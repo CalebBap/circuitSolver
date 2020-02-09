@@ -109,8 +109,7 @@ public class CircuitControl{
                     double[] relativePosition = relativePosition(event.getX(), event.getY());
                     componentEndX = relativePosition[0];
                     componentEndY = relativePosition[1];
-                    //drawOverlayComponent();
-                    test(overlayCircuitGraphics, null);
+                    drawComponent(overlayCircuitGraphics, null);
                 }
             }
         };
@@ -119,8 +118,7 @@ public class CircuitControl{
             public void handle(MouseEvent event) {
                 if (View.getTool() != View.Tool.MOVE) {
                     clearOverlay();
-                    //drawComponent();
-                    test(circuitGraphics, null);
+                    drawComponent(circuitGraphics, null);
                 }
             }
         };
@@ -260,109 +258,7 @@ public class CircuitControl{
         return relativePosition;
     }
 
-    /*void drawOverlayComponent(){//double x, double y) {
-        /*double[] relativePosition = relativePosition(x, y);
-        componentEndX = relativePosition[0];
-        componentEndY = relativePosition[1];
-        clearOverlay();
-        circuitHover(x, y);*/
-        /*overlayCircuitGraphics.setStroke(Color.BLACK);
-        overlayCircuitGraphics.setLineWidth(4);
-
-        Component component = null;
-        double width = View.getRoot().getWidth() * scale;
-        double height = View.getRoot().getHeight() * scale;
-        double angle = Math.atan(Math.abs(clickY - componentEndY) / Math.abs(clickX - componentEndX));
-        LineCoordinate[] endLineCoordinates = drawComponentEnds(angle);
-        LineCoordinate lowerEnd = endLineCoordinates[0];
-        LineCoordinate higherEnd = endLineCoordinates[1];
-        overlayCircuitGraphics.strokeLine(lowerEnd.startX, lowerEnd.startY, lowerEnd.endX, lowerEnd.endY);
-        overlayCircuitGraphics.strokeLine(higherEnd.startX, higherEnd.startY, higherEnd.endX, higherEnd.endY);
-        LineCoordinate relativeStartPosition = new LineCoordinate(lowerEnd.startX / width, lowerEnd.startY / height,
-                            lowerEnd.endX / width, lowerEnd.endY / height);
-
-        LineCoordinate relativeEndPosition = new LineCoordinate(higherEnd.startX / width, higherEnd.startY / height,
-                        higherEnd.endX / width, higherEnd.endY / height);
-                        boolean quadrantNE_SW = false;
-        if( (lowerEnd.getStartX() < higherEnd.getEndX()) && (higherEnd.getEndY() < lowerEnd.getStartY()) || 
-        lowerEnd.getStartY() == higherEnd.getEndY()){
-            quadrantNE_SW = true;
-        }
-        switch (View.getTool()) {
-            case WIRE:
-                component = new Wire(relativeStartPosition, relativeEndPosition, angle, quadrantNE_SW);
-                break;
-            case RESISTOR:
-                component = new Resistor(relativeStartPosition, relativeEndPosition, angle, quadrantNE_SW, 10);
-                break;
-            default:
-                return;
-        }
-
-        LineCoordinate[] drawing = component.drawComponent();
-        for (int z = 0; z < drawing.length; z++) {
-            overlayCircuitGraphics.strokeLine(drawing[z].startX, drawing[z].startY, drawing[z].endX, drawing[z].endY);
-        }
-    }
-
-    void drawComponent() {
-        //clearOverlay();
-        
-        Component component = null;
-        circuitGraphics.setStroke(Color.BLACK);
-        circuitGraphics.setLineWidth(4);
-
-        double angle = Math.atan(Math.abs(clickY - componentEndY) / Math.abs(clickX - componentEndX));
-        LineCoordinate[] endLineCoordinates = drawComponentEnds(angle);
-        LineCoordinate lowerEnd = endLineCoordinates[0];
-        LineCoordinate higherEnd = endLineCoordinates[1];
-        double width = View.getRoot().getWidth() * scale;
-        double height = View.getRoot().getHeight() * scale;
-
-        /*if (((lowerEnd.startX < lowerEnd.endX) && (higherEnd.startX < higherEnd.endX))
-                || ((lowerEnd.startX == higherEnd.startX) && (lowerEnd.startY < lowerEnd.endY)
-                        && (higherEnd.startY < higherEnd.endY))) {*/
-
-            /*circuitGraphics.strokeLine(lowerEnd.startX, lowerEnd.startY, lowerEnd.endX, lowerEnd.endY);
-            circuitGraphics.strokeLine(higherEnd.startX, higherEnd.startY, higherEnd.endX, higherEnd.endY);
-
-            LineCoordinate relativeStartPosition = new LineCoordinate(lowerEnd.startX / width, lowerEnd.startY / height,
-                            lowerEnd.endX / width, lowerEnd.endY / height);
-
-            LineCoordinate relativeEndPosition = new LineCoordinate(higherEnd.startX / width, higherEnd.startY / height,
-                            higherEnd.endX / width, higherEnd.endY / height);
-           
-            boolean quadrantNE_SW = false;
-            if( (lowerEnd.getStartX() < higherEnd.getEndX()) && (higherEnd.getEndY() < lowerEnd.getStartY()) || 
-            lowerEnd.getStartY() == higherEnd.getEndY()){
-                quadrantNE_SW = true;
-            }
-
-            switch (View.getTool()) {
-                case WIRE:
-                    component = new Wire(relativeStartPosition, relativeEndPosition, angle, quadrantNE_SW);
-                    break;
-                case RESISTOR:
-                    component = new Resistor(relativeStartPosition, relativeEndPosition, angle, quadrantNE_SW, 10);
-                    break;
-                default:
-                    return;
-            }
-
-            LineCoordinate[] drawing = component.drawComponent();
-            for (int x = 0; x < drawing.length; x++) {
-                circuitGraphics.strokeLine(drawing[x].startX, drawing[x].startY, drawing[x].endX, drawing[x].endY);
-            }
-
-            relativeStartPosition.applyRelativePosition();
-            relativeEndPosition.applyRelativePosition();
-            component.adjustPosition(relativeStartPosition, relativeEndPosition);
-
-            model.addCircuitComponent(component);
-        //}
-    }*/
-
-    void test(GraphicsContext graphicsContext, Component component){
+    void drawComponent(GraphicsContext graphicsContext, Component component){
         graphicsContext.setStroke(Color.BLACK);
         graphicsContext.setLineWidth(4);
 

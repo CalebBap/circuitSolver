@@ -38,10 +38,10 @@ public class Model{
 
         if (file == null) {
             return false;
-        }//else{  
-            if(circuitComponents.size() > 0)
-                closeFile();
-        //}
+        }
+         
+        if(circuitComponents.size() > 0)
+            closeFile();
 
         if (!newCircuit)
             read();
