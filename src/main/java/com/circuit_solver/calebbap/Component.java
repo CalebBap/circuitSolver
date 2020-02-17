@@ -22,4 +22,9 @@ public abstract class Component implements Serializable{
     }
 
     public abstract LineCoordinate[] drawComponent();
+
+    public LineCoordinate getRelativeEndPositions(){
+        return new LineCoordinate(relativeStartPosition.startX, relativeStartPosition.startY, 
+            relativeEndPosition.endX, relativeEndPosition.endY);
+    }
 }

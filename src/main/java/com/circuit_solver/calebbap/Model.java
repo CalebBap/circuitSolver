@@ -19,7 +19,8 @@ public class Model{
     FileInputStream fileIn;
     ObjectInputStream in;
 
-    ArrayList<Component> circuitComponents = new ArrayList<>(); 
+    ArrayList<Component> circuitComponents = new ArrayList<>();
+    ArrayList<Node> circuitNodes = new ArrayList<>();
 
     Boolean init(Boolean newCircuit) {
         FileChooser fileChooser = new FileChooser();
@@ -99,8 +100,20 @@ public class Model{
         }
     }
 
+    public ArrayList<Component> getComponents(){
+        return circuitComponents;
+    }
+
+    public ArrayList<Node> getNodes(){
+        return circuitNodes;
+    }
+
     public void addCircuitComponent(Component newComponent){
         circuitComponents.add(newComponent);
+    }
+
+    public void addCircuitNode(Node newNode){
+        circuitNodes.add(newNode);
     }
 
     void undo() {}
