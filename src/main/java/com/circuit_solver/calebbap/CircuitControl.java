@@ -422,28 +422,28 @@ public class CircuitControl{
         checkEnds.applyRelativePosition();
         for(Component component : model.getComponents()){
             LineCoordinate ends = component.getRelativeEndPositions();
-            double[] location;
+            double[] location = {0, 0};
             if( (checkEnds.startX == ends.startX && checkEnds.startY == ends.startY) || 
                 (checkEnds.startX == ends.endX &&  checkEnds.startY == ends.endY) ){
                     location = new double[]{checkEnds.startX, checkEnds.startY};
             }else if( (checkEnds.endX == ends.startX && checkEnds.endY == ends.startY) || 
                         (checkEnds.endX == ends.endX &&  checkEnds.endY == ends.endY) ){
-                    location = new double[]{checkEnds.startX, checkEnds.startY};
-            }else{
-                return null;
+                    location = new double[]{checkEnds.endX, checkEnds.endY};
             }
 
-            for(Node node : model.getNodes()){
-                double[] nodeLocation = node.getLocation();
-                if( location[0] == nodeLocation[0] && location[1] == nodeLocation[1]){
-                    node.addComponent(component);
-                    return null; // No need to draw Node again
+            if( (location[0] != 0) && (location[1] != 0) ){
+                for(Node node : model.getNodes()){
+                    double[] nodeLocation = node.getLocation();
+                    if( location[0] == nodeLocation[0] && location[1] == nodeLocation[1]){
+                        node.addComponent(component);
+                        return null; // No need to draw Node again
+                    }
                 }
+                ArrayList<Component> components = new ArrayList<>();
+                components.add(checkComponent);
+                components.add(component);
+                return new Node(components, location);
             }
-            ArrayList<Component> components = new ArrayList<>();
-            components.add(checkComponent);
-            components.add(component);
-            return new Node(components, location);
         }
 
         return null;
