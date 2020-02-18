@@ -1,9 +1,9 @@
 package com.circuit_solver.calebbap;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import com.circuit_solver.calebbap.components.*;
+import com.circuit_solver.calebbap.components.Resistor;
+import com.circuit_solver.calebbap.components.Wire;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
@@ -303,11 +303,16 @@ public class CircuitControl{
             graphicsContext.strokeLine(drawing[x].startX, drawing[x].startY, drawing[x].endX, drawing[x].endY);
         }
 
-        Node node = checkForNode(component, new LineCoordinate(lowerEnd.startX / width, lowerEnd.startY / height, higherEnd.endX / width, higherEnd.endY / height));
-        if(node != null){
-            double[] location = node.getLocation();
-            
-            graphicsContext.fillArc(location[0] * width, location[1] * height, 10, 10, 0, 360, ArcType.ROUND);
+        Node[] nodes = {null, null};
+        nodes[0] = checkForNode(component, new double[]{lowerEnd.startX / width, lowerEnd.startY / height});
+        nodes[1] = checkForNode(component, new double[]{higherEnd.endX / width, higherEnd.endY / height});
+        if(nodes[0] != null){
+            double[] location = nodes[0].getLocation();  
+            graphicsContext.fillArc((location[0] * width) - 4, (location[1] * height) - 4, 8, 8, 0, 360, ArcType.ROUND);
+        }
+        if(nodes[1] != null){
+            double[] location = nodes[1].getLocation();  
+            graphicsContext.fillArc((location[0] * width) - 4, (location[1] * height) - 4, 8, 8, 0, 360, ArcType.ROUND);
         }
 
         if(graphicsContext == circuitGraphics){
@@ -418,20 +423,22 @@ public class CircuitControl{
         return (new LineCoordinate[] { lowerEnd, higherEnd });
     }
 
-    Node checkForNode(Component checkComponent, LineCoordinate checkEnds){
-        checkEnds.applyRelativePosition();
+    Node checkForNode(Component checkComponent, double[] checkEnd){
+        double width = View.getRoot().getWidth();
+        double height = View.getRoot().getHeight();
+
+        checkEnd[0] += getXShift() / width;
+        checkEnd[1] += getYShift() / height;
+
         for(Component component : model.getComponents()){
             LineCoordinate ends = component.getRelativeEndPositions();
-            double[] location = {0, 0};
-            if( (checkEnds.startX == ends.startX && checkEnds.startY == ends.startY) || 
-                (checkEnds.startX == ends.endX &&  checkEnds.startY == ends.endY) ){
-                    location = new double[]{checkEnds.startX, checkEnds.startY};
-            }else if( (checkEnds.endX == ends.startX && checkEnds.endY == ends.startY) || 
-                        (checkEnds.endX == ends.endX &&  checkEnds.endY == ends.endY) ){
-                    location = new double[]{checkEnds.endX, checkEnds.endY};
+            double[] location = null;
+            if( (checkEnd[0] == ends.startX && checkEnd[1] == ends.startY) || 
+                (checkEnd[0] == ends.endX &&  checkEnd[1] == ends.endY) ){
+                    location = new double[]{checkEnd[0], checkEnd[1]};
             }
 
-            if( (location[0] != 0) && (location[1] != 0) ){
+            if(location != null){
                 for(Node node : model.getNodes()){
                     double[] nodeLocation = node.getLocation();
                     if( location[0] == nodeLocation[0] && location[1] == nodeLocation[1]){
