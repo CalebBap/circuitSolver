@@ -303,16 +303,12 @@ public class CircuitControl{
             graphicsContext.strokeLine(drawing[x].startX, drawing[x].startY, drawing[x].endX, drawing[x].endY);
         }
 
-        Node[] nodes = {null, null};
-        nodes[0] = checkForNode(component, new double[]{lowerEnd.startX / width, lowerEnd.startY / height});
-        nodes[1] = checkForNode(component, new double[]{higherEnd.endX / width, higherEnd.endY / height});
-        if(nodes[0] != null){
-            double[] location = nodes[0].getLocation();  
-            graphicsContext.fillArc((location[0] * width) - 4, (location[1] * height) - 4, 8, 8, 0, 360, ArcType.ROUND);
-        }
-        if(nodes[1] != null){
-            double[] location = nodes[1].getLocation();  
-            graphicsContext.fillArc((location[0] * width) - 4, (location[1] * height) - 4, 8, 8, 0, 360, ArcType.ROUND);
+        Node[] nodes = {checkForNode(component, new double[]{lowerEnd.startX / width, lowerEnd.startY / height}), 
+                        checkForNode(component, new double[]{higherEnd.endX / width, higherEnd.endY / height})};
+        graphicsContext.setFill(Color.BLACK);
+        for(Node node : nodes){
+            if(node != null)
+                graphicsContext.fillArc((node.getLocation()[0] * width) - 5, (node.getLocation()[1] * height) - 5, 10, 10, 0, 360, ArcType.ROUND);
         }
 
         if(graphicsContext == circuitGraphics){
