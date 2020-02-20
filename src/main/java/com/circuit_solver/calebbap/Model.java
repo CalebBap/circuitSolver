@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -61,7 +63,11 @@ public class Model{
 
     void write() {
         try{
-            out.writeObject(circuitComponents);
+            Map<String, ArrayList> circuitContents = new HashMap<String, ArrayList>();
+            circuitContents.put("components", circuitComponents);
+            circuitContents.put("nodes", circuitNodes);
+            //out.writeObject(circuitComponents);
+            out.writeObject(circuitContents);
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -71,7 +77,10 @@ public class Model{
         try {
             fileIn = new FileInputStream(file);
             in = new ObjectInputStream(fileIn);
-            circuitComponents = (ArrayList<Component>) in.readObject();
+            //circuitComponents = (ArrayList<Component>) in.readObject();
+            Map<String, ArrayList> circuitContents = (Map<String, ArrayList>) in.readObject();
+            circuitComponents = circuitContents.get("components");
+            circuitNodes = circuitContents.get("nodes");
             in.close();
             fileIn.close();
         } catch (Exception i) {
