@@ -82,6 +82,7 @@ public class Model{
     void closeFile() {
         write();
         circuitComponents.clear();
+        circuitNodes.clear();
         try{
             if(fileOut != null)
                 fileOut.close();
@@ -97,6 +98,9 @@ public class Model{
     void drawFromFile() {
         for(Component component : circuitComponents){
             View.getCircuitControl().drawComponent(component);
+        }
+        for(Node node : circuitNodes){
+            View.getCircuitControl().drawNode(node);
         }
     }
 

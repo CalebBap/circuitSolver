@@ -12,6 +12,22 @@ public class Node implements Serializable{
         location = newLocation;
     }
 
+    public void applyRelativePosition(){
+        double width = View.getRoot().getWidth() * CircuitControl.getScale();
+        double height = View.getRoot().getHeight() * CircuitControl.getScale();
+
+        location[0] = location[0] + (CircuitControl.getXShift() / width);
+        location[1] = location[1] + (CircuitControl.getYShift() / height);
+    }
+
+    public void applyAbsolutePosition(){
+        double width = View.getRoot().getWidth() * CircuitControl.getScale();
+        double height = View.getRoot().getHeight() * CircuitControl.getScale();
+
+        location[0] = location[0] - (CircuitControl.getXShift() / width);
+        location[1] = location[1] - (CircuitControl.getYShift() / height);
+    }
+
     public double[] getLocation(){
         return location;
     }

@@ -308,13 +308,21 @@ public class CircuitControl{
         graphicsContext.setFill(Color.BLACK);
         for(Node node : nodes){
             if(node != null)
-                graphicsContext.fillArc((node.getLocation()[0] * width) - 5, (node.getLocation()[1] * height) - 5, 10, 10, 0, 360, ArcType.ROUND);
+                graphicsContext.fillArc((node.getLocation()[0] * width) - (5 * scale), (node.getLocation()[1] * height) - (5 * scale), 10 * scale, 10 * scale, 0, 360, ArcType.ROUND);
         }
 
         if(graphicsContext == circuitGraphics){
             relativeStartPosition.applyRelativePosition();
             relativeEndPosition.applyRelativePosition();
             component.adjustPosition(relativeStartPosition, relativeEndPosition);
+            // New
+            for(Node node : nodes){
+                if(node != null){
+                    node.applyRelativePosition();
+                    model.addCircuitNode(node);
+                }
+            }
+            // End of new code
             model.addCircuitComponent(component);
         }
     }
@@ -341,6 +349,15 @@ public class CircuitControl{
 
         circuitGraphics.strokeLine(xStart, yStart, drawing[0].startX, drawing[0].startY);
         circuitGraphics.strokeLine(drawing[drawing.length - 1].endX, drawing[drawing.length - 1].endY, xEnd, yEnd);
+    }
+
+    void drawNode(Node node){
+        double width = View.getRoot().getWidth() * scale;
+        double height = View.getRoot().getHeight() * scale;
+        circuitGraphics.setFill(Color.BLACK);
+        double x = (node.getLocation()[0] * width) - xShift;
+        double y = (node.getLocation()[1] * height) - yShift;
+        circuitGraphics.fillArc(x - (5 * scale), y - (5 * scale), 10 * scale, 10 * scale, 0, 360, ArcType.ROUND);
     }
 
     LineCoordinate[] drawComponentEnds(double angle) {
@@ -445,7 +462,10 @@ public class CircuitControl{
                 ArrayList<Component> components = new ArrayList<>();
                 components.add(checkComponent);
                 components.add(component);
-                return new Node(components, location);
+                //Node node = new Node(components, location);
+                //model.addCircuitNode(node);
+                //return node;
+                return new Node(components, location); 
             }
         }
 
