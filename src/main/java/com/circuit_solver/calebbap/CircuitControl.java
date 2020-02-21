@@ -1,15 +1,19 @@
 package com.circuit_solver.calebbap;
 
+import java.io.File;
 import java.util.ArrayList;
 
+import com.circuit_solver.calebbap.View.Tool;
 import com.circuit_solver.calebbap.components.Resistor;
 import com.circuit_solver.calebbap.components.Wire;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
+import javafx.scene.ImageCursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.ArcType;
@@ -44,6 +48,9 @@ public class CircuitControl{
     private static double scale = 1;
     private static double dotSpacing;
 
+    File file = new File(getClass().getClassLoader().getResource("icons/deleteCursor.png").getFile());
+    private Image deleteCursor = new Image(file.toURI().toString());
+
     private Model model;
 
     CircuitControl(Canvas newCircuit, GraphicsContext newCircuitGraphics, Canvas newOverlayCircuit,
@@ -61,7 +68,7 @@ public class CircuitControl{
     void mouseControl() {
         final EventHandler<MouseEvent> mouseMoved = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if ((View.getRoot().getChildren().contains(circuit)) && (View.getTool() != View.Tool.MOVE)) {
+                if ( (View.getRoot().getChildren().contains(circuit)) && (View.getTool() != View.Tool.MOVE) ) {
                     circuitHover(event.getX(), event.getY());
                 }
             }
@@ -77,15 +84,12 @@ public class CircuitControl{
         final EventHandler<MouseEvent> mouseEntered = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 switch (View.getTool()) {
-                case WIRE:
-                    View.getStage().getScene().setCursor(Cursor.CROSSHAIR);
-                    break;
-                case MOVE:
-                    View.getStage().getScene().setCursor(Cursor.MOVE);
-                    break;
-                default:
-                    View.getStage().getScene().setCursor(Cursor.CROSSHAIR);
-                    break;
+                    case MOVE:
+                        View.getStage().getScene().setCursor(Cursor.MOVE);
+                        break;
+                    default:
+                        View.getStage().getScene().setCursor(Cursor.NONE);
+                        break;
                 }
             }
         };
@@ -233,13 +237,16 @@ public class CircuitControl{
     void circuitHover(double x, double y) {
         clearOverlay();
 
-        double[] relativePosition = relativePosition(x, y);
-        dotXPosition = relativePosition[0];
-        dotYPosition = relativePosition[1];
-
-        overlayCircuitGraphics.setStroke(Color.BLACK);
-        overlayCircuitGraphics.setLineWidth(2);
-        overlayCircuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
+        if(View.getTool() != Tool.DELETE){
+            double[] relativePosition = relativePosition(x, y);
+            dotXPosition = relativePosition[0];
+            dotYPosition = relativePosition[1];
+            overlayCircuitGraphics.setStroke(Color.BLACK);
+            overlayCircuitGraphics.setLineWidth(2);
+            overlayCircuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
+        }else{
+            overlayCircuitGraphics.drawImage(deleteCursor, x - 10, y - 10);
+        }
     }
 
     public double[] relativePosition(double x, double y) {
@@ -315,14 +322,12 @@ public class CircuitControl{
             relativeStartPosition.applyRelativePosition();
             relativeEndPosition.applyRelativePosition();
             component.adjustPosition(relativeStartPosition, relativeEndPosition);
-            // New
             for(Node node : nodes){
                 if(node != null){
                     node.applyRelativePosition();
                     model.addCircuitNode(node);
                 }
             }
-            // End of new code
             model.addCircuitComponent(component);
         }
     }
@@ -462,9 +467,6 @@ public class CircuitControl{
                 ArrayList<Component> components = new ArrayList<>();
                 components.add(checkComponent);
                 components.add(component);
-                //Node node = new Node(components, location);
-                //model.addCircuitNode(node);
-                //return node;
                 return new Node(components, location); 
             }
         }

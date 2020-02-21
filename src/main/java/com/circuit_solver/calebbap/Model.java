@@ -24,9 +24,9 @@ public class Model{
     ArrayList<Component> circuitComponents = new ArrayList<>();
     ArrayList<Node> circuitNodes = new ArrayList<>();
 
-    Boolean init(Boolean newCircuit) {
-        FileChooser fileChooser = new FileChooser();
-        File initialDirectory = new File(System.getProperty("user.home") + File.separator);
+    Boolean init(final Boolean newCircuit) {
+        final FileChooser fileChooser = new FileChooser();
+        final File initialDirectory = new File(System.getProperty("user.home") + File.separator);
 
         fileChooser.getExtensionFilters().add(new ExtensionFilter("Circuit", "*.crc"));
         fileChooser.setInitialDirectory(initialDirectory);
@@ -52,7 +52,7 @@ public class Model{
         try {
             fileOut = new FileOutputStream(file);
             out = new ObjectOutputStream(fileOut);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return false;
         }
 
@@ -63,12 +63,13 @@ public class Model{
 
     void write() {
         try{
-            Map<String, ArrayList> circuitContents = new HashMap<String, ArrayList>();
-            circuitContents.put("components", circuitComponents);
-            circuitContents.put("nodes", circuitNodes);
-            //out.writeObject(circuitComponents);
-            out.writeObject(circuitContents);
-        }catch(Exception e){
+            if(circuitComponents.size() > 0 || circuitNodes.size() > 0){
+                final Map<String, ArrayList> circuitContents = new HashMap<String, ArrayList>();
+                circuitContents.put("components", circuitComponents);
+                circuitContents.put("nodes", circuitNodes);
+                out.writeObject(circuitContents);
+            }
+        }catch(final Exception e){
             e.printStackTrace();
         }
     }
@@ -77,13 +78,12 @@ public class Model{
         try {
             fileIn = new FileInputStream(file);
             in = new ObjectInputStream(fileIn);
-            //circuitComponents = (ArrayList<Component>) in.readObject();
-            Map<String, ArrayList> circuitContents = (Map<String, ArrayList>) in.readObject();
+            final Map<String, ArrayList> circuitContents = (Map<String, ArrayList>) in.readObject();
             circuitComponents = circuitContents.get("components");
             circuitNodes = circuitContents.get("nodes");
             in.close();
             fileIn.close();
-        } catch (Exception i) {
+        } catch (final Exception i) {
             i.printStackTrace();
         }
     }
@@ -99,16 +99,16 @@ public class Model{
             if(out != null)
                 out.close();
 
-        }catch(Exception e){
+        }catch(final Exception e){
             e.printStackTrace();
         }
     }
 
     void drawFromFile() {
-        for(Component component : circuitComponents){
+        for(final Component component : circuitComponents){
             View.getCircuitControl().drawComponent(component);
         }
-        for(Node node : circuitNodes){
+        for(final Node node : circuitNodes){
             View.getCircuitControl().drawNode(node);
         }
     }
@@ -121,11 +121,11 @@ public class Model{
         return circuitNodes;
     }
 
-    public void addCircuitComponent(Component newComponent){
+    public void addCircuitComponent(final Component newComponent){
         circuitComponents.add(newComponent);
     }
 
-    public void addCircuitNode(Node newNode){
+    public void addCircuitNode(final Node newNode){
         circuitNodes.add(newNode);
     }
 
