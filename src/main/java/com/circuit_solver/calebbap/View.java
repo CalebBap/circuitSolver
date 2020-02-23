@@ -216,8 +216,7 @@ public class View extends Application {
     void openCircuit(Boolean newCircuit) {
         if (((newCircuit && model.init(true)) || (!newCircuit && model.init(false))) && (circuitControl != null)) {
             circuitControl.setScale(1 / CircuitControl.getScale());
-            circuitControl.resetXShift();
-            circuitControl.resetYShift();
+            circuitControl.resetShift();
         }
         initCircuit();
         if (!newCircuit)

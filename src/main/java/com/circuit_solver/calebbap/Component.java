@@ -2,6 +2,7 @@ package com.circuit_solver.calebbap;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public abstract class Component implements Serializable{
     protected LineCoordinate relativeStartPosition;
     protected LineCoordinate relativeEndPosition;
@@ -24,7 +25,7 @@ public abstract class Component implements Serializable{
     public abstract LineCoordinate[] drawComponent();
 
     public LineCoordinate getRelativeEndPositions(){
-        return new LineCoordinate(relativeStartPosition.startX, relativeStartPosition.startY, 
-            relativeEndPosition.endX, relativeEndPosition.endY);
+        return new LineCoordinate(new Point(relativeStartPosition.start.x, relativeStartPosition.start.y), 
+            new Point(relativeEndPosition.end.x, relativeEndPosition.end.y));
     }
 }

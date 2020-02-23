@@ -2,61 +2,48 @@ package com.circuit_solver.calebbap;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class LineCoordinate implements Serializable {
-    double startX;
-    double startY;
-    double endX;
-    double endY;
+    Point start = new Point();
+    Point end = new Point();
 
     public LineCoordinate(){ }
 
-    public LineCoordinate(double newStartX, double newStartY, double newEndX, double newEndY){
-        startX = newStartX;
-        startY = newStartY;
-        endX = newEndX;
-        endY = newEndY;
+    public LineCoordinate(Point newStart, Point newEnd){
+        start = newStart;
+        end = newEnd;
     }
 
-    public double getStartX(){
-        return startX;
+    public Point getStart(){
+        return start;
     }
 
-    public double getEndX(){
-        return endX;
+    public Point getEnd(){
+        return end;
     }
 
-    public double getStartY(){
-        return startY;
-    }
-
-    public double getEndY(){
-        return endY;
-    }
-
-    public void setValues(double newStartX, double newStartY, double newEndX, double newEndY){
-        startX = newStartX;
-        startY = newStartY;
-        endX = newEndX;
-        endY = newEndY;
+    public void setValues(Point newStart, Point newEnd){
+        start = newStart;
+        end = newEnd;
     }
 
     public void applyRelativePosition(){
         double width = View.getRoot().getWidth() * CircuitControl.getScale();
         double height = View.getRoot().getHeight() * CircuitControl.getScale();
 
-        startX = startX + (CircuitControl.getXShift() / width);
-        startY = startY + (CircuitControl.getYShift() / height);
-        endX = endX + (CircuitControl.getXShift() / width);
-        endY = endY + (CircuitControl.getYShift() / height);
+        start.x += CircuitControl.getShift().x / width;
+        start.y += CircuitControl.getShift().y / height;
+        end.x += CircuitControl.getShift().x / width;
+        end.y += CircuitControl.getShift().y / height;
     }
 
     public void applyAbsolutePosition(){
         double width = View.getRoot().getWidth() * CircuitControl.getScale();
         double height = View.getRoot().getHeight() * CircuitControl.getScale();
 
-        startX = startX - (CircuitControl.getXShift() / width);
-        startY = startY - (CircuitControl.getYShift() / height);
-        endX = endX - (CircuitControl.getXShift() / width);
-        endY = endY - (CircuitControl.getYShift() / height);
+        start.x -= CircuitControl.getShift().x / width;
+        start.y -= CircuitControl.getShift().y / height;
+        end.x -= CircuitControl.getShift().x / width;
+        end.y -= CircuitControl.getShift().y / height;
     }
 }

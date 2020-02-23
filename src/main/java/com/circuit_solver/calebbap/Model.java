@@ -22,6 +22,7 @@ public class Model{
     ObjectInputStream in;
 
     ArrayList<Component> circuitComponents = new ArrayList<>();
+    Component selectedComponent;
     ArrayList<Node> circuitNodes = new ArrayList<>();
 
     Boolean init(final Boolean newCircuit) {
@@ -74,6 +75,7 @@ public class Model{
         }
     }
 
+    @SuppressWarnings("unchecked")
     void read(){
         try {
             fileIn = new FileInputStream(file);
@@ -122,7 +124,16 @@ public class Model{
     }
 
     public void addCircuitComponent(final Component newComponent){
+        //System.out.println("Adding component: " + newComponent);
         circuitComponents.add(newComponent);
+    }
+
+    public Component selectedComponent(){
+        return selectedComponent;
+    }
+
+    public void setSelectedComponent(Component component){
+        selectedComponent = component;
     }
 
     public void addCircuitNode(final Node newNode){

@@ -10,7 +10,6 @@ import com.circuit_solver.calebbap.components.Wire;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.Cursor;
-import javafx.scene.ImageCursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -29,21 +28,16 @@ public class CircuitControl{
 
     private int[] numDots = { 0, 0 };
 
-    private double dotXPosition = 0;
-    private double dotYPosition = 0;
+    private Point dotPosition = new Point();
 
-    private double clickX;
-    private double clickY;
+    private Point click = new Point();
 
-    private double componentEndX;
-    private double componentEndY;
+    private Point componentEnd = new Point();
 
-    private double orginalMouseX;
-    private double orginalMouseY;
-    private static double xShift = 0;
-    private static double yShift = 0;
+    private Point orginalMouse = new Point();
+    private static Point shift = new Point();
 
-    private LineCoordinate backgroundShift = new LineCoordinate(0, 0, 0, 0);
+    private LineCoordinate backgroundShift = new LineCoordinate(new Point(), new Point());
 
     private static double scale = 1;
     private static double dotSpacing;
@@ -68,9 +62,8 @@ public class CircuitControl{
     void mouseControl() {
         final EventHandler<MouseEvent> mouseMoved = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if ( (View.getRoot().getChildren().contains(circuit)) && (View.getTool() != View.Tool.MOVE) ) {
-                    circuitHover(event.getX(), event.getY());
-                }
+                if ( (View.getRoot().getChildren().contains(circuit)) && (View.getTool() != View.Tool.MOVE) )
+                    circuitHover(new Point(event.getX(), event.getY()));
             }
         };
 
@@ -96,34 +89,33 @@ public class CircuitControl{
 
         final EventHandler<MouseEvent> mousePressed = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if (withinBounds(event.getX(), event.getY())) {
-                    if (View.getTool() != View.Tool.MOVE) {
-                        double[] relativePosition = relativePosition(event.getX(), event.getY());
-                        clickX = relativePosition[0];
-                        clickY = relativePosition[1];
+                if (withinBounds(new Point(event.getX(), event.getY()))) {
+                    if (View.getTool() != View.Tool.MOVE && View.getTool() != View.Tool.DELETE) {
+                        double[] relativePosition = relativePosition(new Point(event.getX(), event.getY()));
+                        click.setXY(relativePosition[0], relativePosition[1]);
                     }
-                    orginalMouseX = event.getX();
-                    orginalMouseY = event.getY();
+                    orginalMouse.setXY(event.getX(), event.getY());
                 }
             }
         };
 
         final EventHandler<MouseEvent> dragged = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if (withinBounds(event.getX(), event.getY()) && (View.getTool() != View.Tool.MOVE)) {
-                    clearOverlay();
-                    circuitHover(event.getX(), event.getY());
-                    double[] relativePosition = relativePosition(event.getX(), event.getY());
-                    componentEndX = relativePosition[0];
-                    componentEndY = relativePosition[1];
-                    drawComponent(overlayCircuitGraphics, null);
+                if(View.getTool() == View.Tool.DELETE){
+                    circuitHover(new Point(event.getX(), event.getY()));
+                }else if (withinBounds(new Point(event.getX(), event.getY())) && (View.getTool() != View.Tool.MOVE) ){
+                        clearOverlay();
+                        circuitHover(new Point(event.getX(), event.getY()));
+                        double[] relativePosition = relativePosition(new Point(event.getX(), event.getY()));
+                        componentEnd.setXY(relativePosition[0], relativePosition[1]);
+                        drawComponent(overlayCircuitGraphics, null);
                 }
             }
         };
 
         final EventHandler<MouseEvent> mouseReleased = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
-                if (View.getTool() != View.Tool.MOVE) {
+                if ( (View.getTool() != View.Tool.MOVE) && (View.getTool() != View.Tool.DELETE) ) {
                     clearOverlay();
                     drawComponent(circuitGraphics, null);
                 }
@@ -133,23 +125,32 @@ public class CircuitControl{
         final EventHandler<MouseEvent> dragToMove = new EventHandler<MouseEvent>() {
             public void handle(MouseEvent event) {
                 if (View.getTool() == View.Tool.MOVE) {
-                    if (event.getX() > orginalMouseX) {
-                        xShift -= (Math.abs(orginalMouseX - event.getX())) * 0.4;
+                    if (event.getX() > orginalMouse.x) {
+                        shift.x -= (Math.abs(orginalMouse.x - event.getX())) * 0.4;
                     } else {
-                        xShift += (Math.abs(orginalMouseX - event.getX())) * 0.4;
+                        shift.x += (Math.abs(orginalMouse.x - event.getX())) * 0.4;
                     }
-                    if (event.getY() > orginalMouseY) {
-                        yShift -= (Math.abs(orginalMouseY - event.getY())) * 0.4;
+                    if (event.getY() > orginalMouse.y) {
+                        shift.y -= (Math.abs(orginalMouse.y - event.getY())) * 0.4;
                     } else {
-                        yShift += (Math.abs(orginalMouseY - event.getY())) * 0.4;
+                        shift.y += (Math.abs(orginalMouse.y - event.getY())) * 0.4;
                     }
 
-                    orginalMouseX = event.getX();
-                    orginalMouseY = event.getY();
+                    orginalMouse.x = event.getX();
+                    orginalMouse.y = event.getY();
 
                     clearCircuit();
                     shiftBackground();
                     model.drawFromFile();
+                }
+            }
+        };
+
+        final EventHandler<MouseEvent> selectComponent = new EventHandler<MouseEvent>() {
+            public void handle(MouseEvent event) {
+                if(View.getTool() == View.Tool.DELETE){
+                    Component component = selectComponent(new Point(event.getX(), event.getY()));
+                    System.out.println(component);
                 }
             }
         };
@@ -161,6 +162,7 @@ public class CircuitControl{
         circuit.addEventHandler(MouseEvent.MOUSE_DRAGGED, dragged);
         circuit.addEventHandler(MouseEvent.MOUSE_DRAGGED, dragToMove);
         circuit.addEventHandler(MouseEvent.MOUSE_RELEASED, mouseReleased);
+        circuit.addEventHandler(MouseEvent.MOUSE_CLICKED, selectComponent);
     }
 
     void drawCircuitBackground() {
@@ -189,35 +191,32 @@ public class CircuitControl{
         int numYDots = 0;
         double height = View.getRoot().getHeight();
         double width = View.getRoot().getWidth();
-        double xStart = 0;
-        double xEnd = width * 0.85;
-        double yStart = 0;
-        double yEnd = height * 0.95;
+        Point start = new Point();
+        Point end = new Point(width * 0.85, height * 0.95);
 
         dotSpacing = (width / height) * 8 * scale;
-        double xClipped = Math.abs(xShift) % dotSpacing;
-        double yClipped = Math.abs(yShift) % dotSpacing;
+        Point clipped = new Point(Math.abs(shift.x) % dotSpacing, Math.abs(shift.y) % dotSpacing);
 
         circuitBackgroundGraphics.setFill(Color.BLUE);
 
-        if (xShift < 0) {
-            xStart += xClipped;
-            xEnd -= xClipped;
+        if (shift.x < 0) {
+            start.x += clipped.x;
+            end.x -= clipped.x;
         } else {
-            xStart -= xClipped;
-            xEnd += xClipped;
+            start.x -= clipped.x;
+            end.x += clipped.x;
         }
 
-        if (yShift < 0) {
-            yStart += yClipped;
-            yEnd -= yClipped;
+        if (shift.y < 0) {
+            start.y += clipped.y;
+            end.y -= clipped.y;
         } else {
-            yStart -= yClipped;
-            yEnd += yClipped;
+            start.y -= clipped.y;
+            end.y += clipped.y;
         }
 
-        for (double x = xStart; x <= xEnd; x += dotSpacing) {
-            for (double y = yStart; y <= yEnd; y += dotSpacing) {
+        for (double x = start.x; x <= end.x; x += dotSpacing) {
+            for (double y = start.y; y <= end.y; y += dotSpacing) {
                 circuitBackgroundGraphics.fillArc(x, y, 2, 2, 0, 360, ArcType.ROUND);
                 if ((y >= 0) && (y <= (height * 0.95)))
                     numYDots++;
@@ -230,39 +229,38 @@ public class CircuitControl{
         numDots[0] = numXDots;
         numDots[1] = numYDots;
 
-        backgroundShift = new LineCoordinate(dotSpacing - xStart, dotSpacing - yStart, (width * 0.85) - xEnd,
-                (height * 0.95) - yEnd);
+        backgroundShift = new LineCoordinate(new Point(dotSpacing - start.x, dotSpacing - start.y), 
+                                             new Point((width * 0.85) - end.x, (height * 0.95) - end.y));
     }
 
-    void circuitHover(double x, double y) {
+    void circuitHover(Point point) {
         clearOverlay();
 
         if(View.getTool() != Tool.DELETE){
-            double[] relativePosition = relativePosition(x, y);
-            dotXPosition = relativePosition[0];
-            dotYPosition = relativePosition[1];
+            double[] relativePosition = relativePosition(point);
+            dotPosition.setXY(relativePosition[0], relativePosition[1]);
             overlayCircuitGraphics.setStroke(Color.BLACK);
             overlayCircuitGraphics.setLineWidth(2);
-            overlayCircuitGraphics.strokeArc(dotXPosition - 3, dotYPosition - 3, 8, 8, 0, 360, ArcType.OPEN);
+            overlayCircuitGraphics.strokeArc(dotPosition.x - 3, dotPosition.y - 3, 8, 8, 0, 360, ArcType.OPEN);
         }else{
-            overlayCircuitGraphics.drawImage(deleteCursor, x - 10, y - 10);
+            overlayCircuitGraphics.drawImage(deleteCursor, point.x - 10, point.y - 10);
         }
     }
 
-    public double[] relativePosition(double x, double y) {
+    public double[] relativePosition(Point point) {
         double width = View.getRoot().getWidth();
         double height = View.getRoot().getHeight();
         dotSpacing = (width / height) * 8 * scale;
         Bounds canvasBounds = circuitBackground.getBoundsInParent();
 
-        double relativeXPostion = x / canvasBounds.getWidth();
-        double relativeYPostion = y / canvasBounds.getHeight();
+        double relativeXPostion = point.x / canvasBounds.getWidth();
+        double relativeYPostion = point.y / canvasBounds.getHeight();
 
         int numDotX = (int) (relativeXPostion * numDots[0] + 0.5);
         int numDotY = (int) (relativeYPostion * numDots[1] + 0.5);
         
-        relativeXPostion = (dotSpacing * numDotX) - backgroundShift.startX;
-        relativeYPostion = (dotSpacing * numDotY) - backgroundShift.startY;
+        relativeXPostion = (dotSpacing * numDotX) - backgroundShift.start.x;
+        relativeYPostion = (dotSpacing * numDotY) - backgroundShift.start.y;
 
         double[] relativePosition = { relativeXPostion, relativeYPostion };
         return relativePosition;
@@ -272,25 +270,25 @@ public class CircuitControl{
         graphicsContext.setStroke(Color.BLACK);
         graphicsContext.setLineWidth(4);
 
-        double angle = Math.atan(Math.abs(clickY - componentEndY) / Math.abs(clickX - componentEndX));
+        double angle = Math.atan(Math.abs(click.y - componentEnd.y) / Math.abs(click.x - componentEnd.x));
         LineCoordinate[] endLineCoordinates = drawComponentEnds(angle);
         LineCoordinate lowerEnd = endLineCoordinates[0];
         LineCoordinate higherEnd = endLineCoordinates[1];
         double width = View.getRoot().getWidth() * scale;
         double height = View.getRoot().getHeight() * scale;
 
-        graphicsContext.strokeLine(lowerEnd.startX, lowerEnd.startY, lowerEnd.endX, lowerEnd.endY);
-        graphicsContext.strokeLine(higherEnd.startX, higherEnd.startY, higherEnd.endX, higherEnd.endY);
+        graphicsContext.strokeLine(lowerEnd.start.x, lowerEnd.start.y, lowerEnd.end.x, lowerEnd.end.y);
+        graphicsContext.strokeLine(higherEnd.start.x, higherEnd.start.y, higherEnd.end.x, higherEnd.end.y);
 
-        LineCoordinate relativeStartPosition = new LineCoordinate(lowerEnd.startX / width, lowerEnd.startY / height,
-                            lowerEnd.endX / width, lowerEnd.endY / height);
+        LineCoordinate relativeStartPosition = new LineCoordinate(new Point(lowerEnd.start.x / width, lowerEnd.start.y / height),
+                            new Point(lowerEnd.end.x / width, lowerEnd.end.y / height));
 
-        LineCoordinate relativeEndPosition = new LineCoordinate(higherEnd.startX / width, higherEnd.startY / height,
-                        higherEnd.endX / width, higherEnd.endY / height);
+        LineCoordinate relativeEndPosition = new LineCoordinate(new Point(higherEnd.start.x / width, higherEnd.start.y / height),
+                        new Point(higherEnd.end.x / width, higherEnd.end.y / height));
         
         boolean quadrantNE_SW = false;
-        if( (lowerEnd.getStartX() < higherEnd.getEndX()) && (higherEnd.getEndY() < lowerEnd.getStartY()) || 
-        lowerEnd.getStartY() == higherEnd.getEndY()){
+        if( (lowerEnd.getStart().x < higherEnd.getEnd().x) && (higherEnd.getEnd().y < lowerEnd.getStart().y) || 
+        lowerEnd.getStart().y == higherEnd.getEnd().y){
             quadrantNE_SW = true;
         }
 
@@ -307,11 +305,11 @@ public class CircuitControl{
 
         LineCoordinate[] drawing = component.drawComponent();
         for (int x = 0; x < drawing.length; x++) {
-            graphicsContext.strokeLine(drawing[x].startX, drawing[x].startY, drawing[x].endX, drawing[x].endY);
+            graphicsContext.strokeLine(drawing[x].start.x, drawing[x].start.y, drawing[x].end.x, drawing[x].end.y);
         }
 
-        Node[] nodes = {checkForNode(component, new double[]{lowerEnd.startX / width, lowerEnd.startY / height}), 
-                        checkForNode(component, new double[]{higherEnd.endX / width, higherEnd.endY / height})};
+        Node[] nodes = {checkForNode(component, new double[]{lowerEnd.start.x / width, lowerEnd.start.y / height}), 
+                        checkForNode(component, new double[]{higherEnd.end.x / width, higherEnd.end.y / height})};
         graphicsContext.setFill(Color.BLACK);
         for(Node node : nodes){
             if(node != null)
@@ -340,102 +338,101 @@ public class CircuitControl{
 
         LineCoordinate[] drawing = component.drawComponent();
         for (int x = 0; x < drawing.length; x++) {
-            drawing[x].startX -= xShift;
-            drawing[x].startY -= yShift;
-            drawing[x].endX -= xShift;
-            drawing[x].endY -= yShift;
-            circuitGraphics.strokeLine(drawing[x].startX, drawing[x].startY, drawing[x].endX, drawing[x].endY);
+            drawing[x].start.x -= shift.x;
+            drawing[x].start.y -= shift.y;
+            drawing[x].end.x -= shift.x;
+            drawing[x].end.y -= shift.y;
+            circuitGraphics.strokeLine(drawing[x].start.x, drawing[x].start.y, drawing[x].end.x, drawing[x].end.y);
         }
 
-        double xStart = ((component.relativeStartPosition.startX * width) - xShift);
-        double yStart = ((component.relativeStartPosition.startY * height) - yShift);
-        double xEnd = ((component.relativeEndPosition.endX * width) - xShift);
-        double yEnd = ((component.relativeEndPosition.endY * height) - yShift);
+        Point start = new Point((component.relativeStartPosition.start.x * width) - shift.x,
+                                (component.relativeStartPosition.start.y * height) - shift.y);
+        Point end = new Point((component.relativeEndPosition.end.x * width) - shift.x,
+                                (component.relativeEndPosition.end.y * height) - shift.y);
 
-        circuitGraphics.strokeLine(xStart, yStart, drawing[0].startX, drawing[0].startY);
-        circuitGraphics.strokeLine(drawing[drawing.length - 1].endX, drawing[drawing.length - 1].endY, xEnd, yEnd);
+        circuitGraphics.strokeLine(start.x, start.y, drawing[0].start.x, drawing[0].start.y);
+        circuitGraphics.strokeLine(drawing[drawing.length - 1].end.x, drawing[drawing.length - 1].end.y, end.x, end.y);
     }
 
     void drawNode(Node node){
         double width = View.getRoot().getWidth() * scale;
         double height = View.getRoot().getHeight() * scale;
         circuitGraphics.setFill(Color.BLACK);
-        double x = (node.getLocation()[0] * width) - xShift;
-        double y = (node.getLocation()[1] * height) - yShift;
-        circuitGraphics.fillArc(x - (5 * scale), y - (5 * scale), 10 * scale, 10 * scale, 0, 360, ArcType.ROUND);
+        Point point = new Point((node.getLocation()[0] * width) - shift.x, (node.getLocation()[1] * height) - shift.y);
+        circuitGraphics.fillArc(point.x - (5 * scale), point.y - (5 * scale), 10 * scale, 10 * scale, 0, 360, ArcType.ROUND);
     }
 
     LineCoordinate[] drawComponentEnds(double angle) {
         LineCoordinate lowerEnd = new LineCoordinate();
         LineCoordinate higherEnd = new LineCoordinate();
 
-        double middleX = Math.abs(clickX + componentEndX) / 2;
-        double middleY = Math.abs(clickY + componentEndY) / 2;
+        double middleX = Math.abs(click.x + componentEnd.x) / 2;
+        double middleY = Math.abs(click.y + componentEnd.y) / 2;
 ;
         double componentRadius = dotSpacing * 2;
 
-        if (clickX == componentEndX) {
-            lowerEnd.startX = lowerEnd.endX = higherEnd.startX = higherEnd.endX = clickX;
-            lowerEnd.endY = middleY - componentRadius;
-            higherEnd.startY = middleY + componentRadius;
-            if (clickY < componentEndY) {
-                lowerEnd.startY = clickY;
-                higherEnd.endY = componentEndY;
+        if (click.x == componentEnd.x) {
+            lowerEnd.start.x = lowerEnd.end.x = higherEnd.start.x = higherEnd.end.x = click.x;
+            lowerEnd.end.y = middleY - componentRadius;
+            higherEnd.start.y = middleY + componentRadius;
+            if (click.y < componentEnd.y) {
+                lowerEnd.start.y = click.y;
+                higherEnd.end.y = componentEnd.y;
             } else {
-                lowerEnd.startY = componentEndY;
-                higherEnd.endY = clickY;
+                lowerEnd.start.y = componentEnd.y;
+                higherEnd.end.y = click.y;
             }
-        } else if (clickY == componentEndY) { // Straight horizontal line
-            lowerEnd.startY = lowerEnd.endY = higherEnd.startY = higherEnd.endY = clickY;
-            lowerEnd.endX = middleX - componentRadius;
-            higherEnd.startX = middleX + componentRadius;
-            if (clickX < componentEndX) {
-                lowerEnd.startX = clickX;
-                higherEnd.endX = componentEndX;
+        } else if (click.y == componentEnd.y) { // Straight horizontal line
+            lowerEnd.start.y = lowerEnd.end.y = higherEnd.start.y = higherEnd.end.y = click.y;
+            lowerEnd.end.x = middleX - componentRadius;
+            higherEnd.start.x = middleX + componentRadius;
+            if (click.x < componentEnd.x) {
+                lowerEnd.start.x = click.x;
+                higherEnd.end.x = componentEnd.x;
             } else {
-                lowerEnd.startX = componentEndX;
-                higherEnd.endX = clickX;
+                lowerEnd.start.x = componentEnd.x;
+                higherEnd.end.x = click.x;
             }
-        } else if ((clickX < componentEndX) && (clickY < componentEndY)) {
-            lowerEnd.startX = clickX;
-            lowerEnd.startY = clickY;
-            lowerEnd.endX = middleX - (componentRadius * Math.cos(angle));
-            lowerEnd.endY = middleY - (componentRadius * Math.sin(angle));
+        } else if ((click.x < componentEnd.x) && (click.y < componentEnd.y)) {
+            lowerEnd.start.x = click.x;
+            lowerEnd.start.y = click.y;
+            lowerEnd.end.x = middleX - (componentRadius * Math.cos(angle));
+            lowerEnd.end.y = middleY - (componentRadius * Math.sin(angle));
 
-            higherEnd.startX = middleX + (componentRadius * Math.cos(angle));
-            higherEnd.startY = middleY + (componentRadius * Math.sin(angle));
-            higherEnd.endX = componentEndX;
-            higherEnd.endY = componentEndY;
-        } else if ((componentEndX < clickX) && (componentEndY < clickY)) {
-            lowerEnd.startX = componentEndX;
-            lowerEnd.startY = componentEndY;
-            lowerEnd.endX = middleX - (componentRadius * Math.cos(angle));
-            lowerEnd.endY = middleY - (componentRadius * Math.sin(angle));
+            higherEnd.start.x = middleX + (componentRadius * Math.cos(angle));
+            higherEnd.start.y = middleY + (componentRadius * Math.sin(angle));
+            higherEnd.end.x = componentEnd.x;
+            higherEnd.end.y = componentEnd.y;
+        } else if ((componentEnd.x < click.x) && (componentEnd.y < click.y)) {
+            lowerEnd.start.x = componentEnd.x;
+            lowerEnd.start.y = componentEnd.y;
+            lowerEnd.end.x = middleX - (componentRadius * Math.cos(angle));
+            lowerEnd.end.y = middleY - (componentRadius * Math.sin(angle));
 
-            higherEnd.startX = middleX + (componentRadius * Math.cos(angle));
-            higherEnd.startY = middleY + (componentRadius * Math.sin(angle));
-            higherEnd.endX = clickX;
-            higherEnd.endY = clickY;
-        } else if ((clickX < componentEndX) && (componentEndY < clickY)) {
-            lowerEnd.startX = clickX;
-            lowerEnd.startY = clickY;
-            lowerEnd.endX = middleX - (componentRadius * Math.cos(angle));
-            lowerEnd.endY = middleY + (componentRadius * Math.sin(angle));
+            higherEnd.start.x = middleX + (componentRadius * Math.cos(angle));
+            higherEnd.start.y = middleY + (componentRadius * Math.sin(angle));
+            higherEnd.end.x = click.x;
+            higherEnd.end.y = click.y;
+        } else if ((click.x < componentEnd.x) && (componentEnd.y < click.y)) {
+            lowerEnd.start.x = click.x;
+            lowerEnd.start.y = click.y;
+            lowerEnd.end.x = middleX - (componentRadius * Math.cos(angle));
+            lowerEnd.end.y = middleY + (componentRadius * Math.sin(angle));
 
-            higherEnd.startX = middleX + (componentRadius * Math.cos(angle));
-            higherEnd.startY = middleY - (componentRadius * Math.sin(angle));
-            higherEnd.endX = componentEndX;
-            higherEnd.endY = componentEndY;
-        } else if ((componentEndX < clickX) && (clickY < componentEndY)) {
-            lowerEnd.startX = componentEndX;
-            lowerEnd.startY = componentEndY;
-            lowerEnd.endX = middleX - (componentRadius * Math.cos(angle));
-            lowerEnd.endY = middleY + (componentRadius * Math.sin(angle));
+            higherEnd.start.x = middleX + (componentRadius * Math.cos(angle));
+            higherEnd.start.y = middleY - (componentRadius * Math.sin(angle));
+            higherEnd.end.x = componentEnd.x;
+            higherEnd.end.y = componentEnd.y;
+        } else if ((componentEnd.x < click.x) && (click.y < componentEnd.y)) {
+            lowerEnd.start.x = componentEnd.x;
+            lowerEnd.start.y = componentEnd.y;
+            lowerEnd.end.x = middleX - (componentRadius * Math.cos(angle));
+            lowerEnd.end.y = middleY + (componentRadius * Math.sin(angle));
 
-            higherEnd.startX = middleX + (componentRadius * Math.cos(angle));
-            higherEnd.startY = middleY - (componentRadius * Math.sin(angle));
-            higherEnd.endX = clickX;
-            higherEnd.endY = clickY;
+            higherEnd.start.x = middleX + (componentRadius * Math.cos(angle));
+            higherEnd.start.y = middleY - (componentRadius * Math.sin(angle));
+            higherEnd.end.x = click.x;
+            higherEnd.end.y = click.y;
         }
 
         return (new LineCoordinate[] { lowerEnd, higherEnd });
@@ -445,14 +442,14 @@ public class CircuitControl{
         double width = View.getRoot().getWidth();
         double height = View.getRoot().getHeight();
 
-        checkEnd[0] += getXShift() / width;
-        checkEnd[1] += getYShift() / height;
+        checkEnd[0] += getShift().x / width;
+        checkEnd[1] += getShift().y / height;
 
         for(Component component : model.getComponents()){
             LineCoordinate ends = component.getRelativeEndPositions();
             double[] location = null;
-            if( (checkEnd[0] == ends.startX && checkEnd[1] == ends.startY) || 
-                (checkEnd[0] == ends.endX &&  checkEnd[1] == ends.endY) ){
+            if( (checkEnd[0] == ends.start.x && checkEnd[1] == ends.start.y) || 
+                (checkEnd[0] == ends.end.x &&  checkEnd[1] == ends.end.y) ){
                     location = new double[]{checkEnd[0], checkEnd[1]};
             }
 
@@ -474,11 +471,11 @@ public class CircuitControl{
         return null;
     }
 
-    Boolean withinBounds(double x, double y) {
+    Boolean withinBounds(Point point) {
         Bounds canvasBounds = circuit.getBoundsInLocal();
 
-        if (x > canvasBounds.getMaxX() || x < canvasBounds.getMinX() || y > canvasBounds.getMaxY()
-                || y < canvasBounds.getMinY()) {
+        if (point.x > canvasBounds.getMaxX() || point.x < canvasBounds.getMinX() || point.y > canvasBounds.getMaxY()
+                || point.y < canvasBounds.getMinY()) {
             return false;
         }
 
@@ -509,6 +506,31 @@ public class CircuitControl{
         circuitBackgroundGraphics.clearRect(0, 0, circuitBackground.getWidth(), circuitBackground.getHeight());
     }
 
+    private Component selectComponent(Point point){
+        double height = View.getRoot().getHeight();
+        double width = View.getRoot().getWidth();
+        dotSpacing = (width / height) * 8 * scale;
+
+        point.x /= width;
+        point.y /= height;
+
+        for(Component component : model.getComponents()){
+            if(component.angle == 0){   // Horizontal line
+                if( Math.abs(point.y - component.relativeEndPosition.end.y) < dotSpacing && 
+                    (Math.abs(point.x - component.relativeStartPosition.start.x) < dotSpacing ||
+                    Math.abs(point.x - component.relativeEndPosition.end.x) > dotSpacing) )
+                        return component;
+            }else if(component.angle == Math.PI / 2){   // Vertical line
+                if( Math.abs(point.x - component.relativeEndPosition.end.x) < dotSpacing && 
+                    (Math.abs(point.y - component.relativeStartPosition.start.y ) < dotSpacing ||
+                    Math.abs(point.y - component.relativeEndPosition.end.y) < dotSpacing) )
+                        return component;
+            }
+        }
+
+        return null;
+    }
+
     public static double getScale() {
         return scale;
     }
@@ -517,20 +539,13 @@ public class CircuitControl{
         scale *= multiplier;
     }
 
-    public static double getXShift() {
-        return xShift;
+    public static Point getShift() {
+        return shift;
     }
 
-    public static double getYShift() {
-        return yShift;
-    }
-
-    public void resetXShift(){
-        xShift = 0;
-    }
-
-    public void resetYShift(){
-        yShift = 0;
+    public void resetShift(){
+        shift.setX(0);
+        shift.setY(0);
     }
 
     public static double getDotSpacing(){
